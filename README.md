@@ -1,10 +1,10 @@
 # csc413-tankgame
 
 
-| Student Information |                |
-|:-------------------:|----------------|
-|  Student Name       |   Name Here    |
-|  Student Email      |   Email Here   |
+| Student Information |                   |
+|:-------------------:|-------------------|
+|  Student Name       | Nhan Nguyen       |
+|  Student Email      | nnguy14@gmail.com |
 
 ## src Folder Purpose 
 src folder is to be used to store source code only.
