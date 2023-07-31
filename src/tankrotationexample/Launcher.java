@@ -1,5 +1,6 @@
 package tankrotationexample;
 
+import tankrotationexample.Resources.ResourceManager;
 import tankrotationexample.game.GameWorld;
 import tankrotationexample.menus.EndGamePanel;
 import tankrotationexample.menus.StartMenuPanel;
@@ -44,6 +45,7 @@ public class Launcher {
     }
 
     public static void main(String[] args) {
+        ResourceManager.loadResources();
         (new Launcher()).initUIComponents();
     }
 
