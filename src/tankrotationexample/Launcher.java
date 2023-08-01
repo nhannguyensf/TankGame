@@ -39,7 +39,7 @@ public class Launcher {
 
     public Launcher() {
         this.jf = new JFrame();             // creating a new JFrame object
-        this.jf.setTitle("Tank Wars Game"); // setting the title of the JFrame window.
+        this.jf.setTitle("Tank Wars Game - by Nhan Nguyen"); // setting the title of the JFrame window.
         // when the GUI is closed, this will also shut down the VM
         this.jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }

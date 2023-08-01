@@ -105,13 +105,27 @@ public class GameWorld extends JPanel implements Runnable {
         this.lf.getJf().addKeyListener(tc2);
     }
 
+    private void drawFloor(Graphics2D buffer) {
+        BufferedImage floor = ResourceManager.getSprite("floor");
+        buffer.drawImage(floor, 0, 0, null);
+    }
+//    private void drawFloor(Graphics2D buffer) {
+//        BufferedImage floor = ResourceManager.getSprite("floor");
+//        for (int i = 0; i < GameConstants.GAME_WORLD_WIDTH; i += 320) {
+//            for (int j = 0; j < GameConstants.GAME_WORLD_HEIGHT; j += 240) {
+//                buffer.drawImage(floor, i, j, null);
+//            }
+//        }
+//    }
+
     @Override
     public void paintComponent(Graphics g) {
         Graphics2D g2 = (Graphics2D) g;
         Graphics2D buffer = world.createGraphics();
         buffer.setColor(Color.BLACK);
         buffer.fillRect(0, 0, GameConstants.GAME_SCREEN_WIDTH, GameConstants.GAME_SCREEN_HEIGHT);
-        this.gobjs.forEach(gameObject->gameObject.drawImage(buffer));
+        this.drawFloor(buffer);
+        this.gobjs.forEach(gameObject -> gameObject.drawImage(buffer));
         this.t1.drawImage(buffer);
         this.t2.drawImage(buffer);
         g2.drawImage(world, 0, 0, null);

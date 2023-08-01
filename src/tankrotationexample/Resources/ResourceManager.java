@@ -1,6 +1,5 @@
 package tankrotationexample.Resources;
 
-import tankrotationexample.game.Bullet;
 import tankrotationexample.game.Sound;
 
 import javax.imageio.ImageIO;
@@ -46,7 +45,7 @@ public class ResourceManager {
             ResourceManager.sprites.put("health", loadSprites("powerups/health1.png"));
             ResourceManager.sprites.put("shield", loadSprites("powerups/shield.png"));
 
-            ResourceManager.sprites.put("floor", loadSprites("floor/bg.bmp"));
+            ResourceManager.sprites.put("floor", loadSprites("floor/floor1.jpeg"));
             ResourceManager.sprites.put("menu", loadSprites("menu/title.png"));
 
         } catch (IOException e) {
