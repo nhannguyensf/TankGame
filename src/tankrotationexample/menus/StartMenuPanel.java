@@ -11,7 +11,7 @@ import java.awt.image.BufferedImage;
 public class StartMenuPanel extends JPanel {
 
     private final Launcher lf;
-    private BufferedImage menuBackground;
+    private final BufferedImage menuBackground;
 
     public StartMenuPanel(Launcher lf) {
         this.lf = lf;

@@ -10,7 +10,7 @@ import java.awt.image.BufferedImage;
 public class EndGamePanel extends JPanel {
 
     private final Launcher lf;
-    private BufferedImage menuBackground;
+    private final BufferedImage menuBackground;
 
     public EndGamePanel(Launcher lf) {
         this.lf = lf;
