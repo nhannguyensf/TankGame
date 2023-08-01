@@ -1,5 +1,6 @@
 package tankrotationexample.Resources;
 
+import tankrotationexample.game.Bullet;
 import tankrotationexample.game.Sound;
 
 import javax.imageio.ImageIO;
@@ -83,4 +84,10 @@ public class ResourceManager {
     public static Object getAnimation(String bullet) {
         return null;
     }
+
+//    public static void main(String[] args) {
+//        ResourcePool<Bullet> bPool = new ResourcePool<>("bullet", 300);
+//        bPool.fillPool(Bullet.class, 300);
+//        ResourceManager.loadResources();
+//    }
 }

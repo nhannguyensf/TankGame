@@ -1,6 +1,7 @@
 package tankrotationexample.game;
 
 import tankrotationexample.GameConstants;
+import tankrotationexample.Resources.ResourcePool;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
@@ -16,12 +17,16 @@ public class Tank {
 
     private float R = 3;
     private float ROTATIONSPEED = 3.0f;
-
+static ResourcePool<Bullet> bPool;
     private BufferedImage img;
     private boolean UpPressed;
     private boolean DownPressed;
     private boolean RightPressed;
     private boolean LeftPressed;
+    static {
+        bPool=new ResourcePool<>("bullet", 300);
+        bPool.fillPool(Bullet.class,300);
+    }
 
     Tank(float x, float y, float vx, float vy, float angle, BufferedImage img) {
         this.x = x;
