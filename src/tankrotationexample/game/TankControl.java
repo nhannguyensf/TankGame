@@ -40,6 +40,9 @@ public class TankControl implements KeyListener {
         if (keyPressed == right) {
             this.tank.toggleRightPressed();
         }
+        if (keyPressed == shoot) {
+            this.tank.toggleShootPressed();
+        }
     }
 
     @Override
@@ -56,6 +59,9 @@ public class TankControl implements KeyListener {
         }
         if (keyReleased == right) {
             this.tank.unToggleRightPressed();
+        }
+        if (keyReleased == shoot) {
+            this.tank.unToggleShootPressed();
         }
     }
 }

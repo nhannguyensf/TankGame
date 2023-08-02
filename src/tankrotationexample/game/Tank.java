@@ -1,20 +1,27 @@
 package tankrotationexample.game;
 
 import tankrotationexample.GameConstants;
-import tankrotationexample.Resources.ResourcePool;
+import tankrotationexample.Resources.ResourceManager;
+//import tankrotationexample.Resources.ResourcePool;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Tank {
 
-    static ResourcePool<Bullet> bPool;
+//    static ResourcePool<Bullet> bPool;
+//
+//    static {
+//        bPool = new ResourcePool<>("bullet", 300);
+//        bPool.fillPool(Bullet.class, 300);
+//    }
 
-    static {
-        bPool = new ResourcePool<>("bullet", 300);
-        bPool.fillPool(Bullet.class, 300);
-    }
+    List<Bullet> ammo = new ArrayList<>();
+    long timeSinceLastShot = 0L;
+    long cooldown = 4000;
 
     private float x;
     private float y;
@@ -29,6 +36,7 @@ public class Tank {
     private boolean DownPressed;
     private boolean RightPressed;
     private boolean LeftPressed;
+    private boolean shootPressed;
 
     Tank(float x, float y, float vx, float vy, float angle, BufferedImage img) {
         this.x = x;
@@ -42,6 +50,22 @@ public class Tank {
     // A helper function to clamp a value between a minimum and maximum
     static float clamp(float value, float min, float max) {
         return Math.max(min, Math.min(max, value));
+    }
+
+    public float getX() {
+        return this.x;
+    }
+
+    void setX(float x) {
+        this.x = x;
+    }
+
+    public float getY() {
+        return this.y;
+    }
+
+    void setY(float y) {
+        this.y = y;
     }
 
     public float getScreen_x() {
@@ -84,6 +108,14 @@ public class Tank {
         this.LeftPressed = false;
     }
 
+    public void toggleShootPressed() {
+        this.shootPressed = true;
+    }
+
+    public void unToggleShootPressed() {
+        this.shootPressed = false;
+    }
+
     void update() {
         if (this.UpPressed) {
             this.moveForwards();
@@ -100,8 +132,11 @@ public class Tank {
         if (this.RightPressed) {
             this.rotateRight();
         }
-
-
+        if (this.shootPressed && ((this.timeSinceLastShot + this.cooldown) < System.currentTimeMillis())) {
+            this.timeSinceLastShot = System.currentTimeMillis();
+            this.ammo.add(new Bullet(x, y, ResourceManager.getSprite("bullet"), angle));
+        }
+        this.ammo.forEach(Bullet::update);
     }
 
     private void rotateLeft() {
@@ -166,24 +201,17 @@ public class Tank {
         Graphics2D g2d = (Graphics2D) g;
         g2d.drawImage(this.img, rotation, null);
         g2d.setColor(Color.RED);
-//        g2d.rotate(Math.toRadians(angle), bounds.x + bounds.width/2, bounds.y + bounds.height/2);
-//        g2d.drawRect((int) x, (int) y, this.img.getWidth(), this.img.getHeight());
+        this.ammo.forEach(bullet -> bullet.drawImage(g2d));
 
-    }
-
-    public float getX() {
-        return this.x;
-    }
-
-    void setX(float x) {
-        this.x = x;
-    }
-
-    public float getY() {
-        return this.y;
-    }
-
-    void setY(float y) {
-        this.y = y;
+        g2d.setColor(Color.YELLOW);
+        g2d.drawRect((int) x - 20, (int) y - 20, 100, 5);
+        long currentWidth = 100 - ((this.timeSinceLastShot + this.cooldown) - System.currentTimeMillis()) / 40;
+        if (currentWidth > 100) {
+            currentWidth = 100;
+        }
+        g2d.fillRect((int) x - 20, (int) y - 20, (int) currentWidth, 5);
+        if (currentWidth < 100) {
+            g2d.drawString("Reloading...", (int) x + 82, (int) y-12 );
+        }
     }
 }
