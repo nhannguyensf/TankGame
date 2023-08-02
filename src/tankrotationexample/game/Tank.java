@@ -39,6 +39,19 @@ public class Tank {
         this.angle = angle;
     }
 
+    // A helper function to clamp a value between a minimum and maximum
+    static float clamp(float value, float min, float max) {
+        return Math.max(min, Math.min(max, value));
+    }
+
+    public float getScreen_x() {
+        return screen_x;
+    }
+
+    public float getScreen_y() {
+        return screen_y;
+    }
+
     void toggleUpPressed() {
         this.UpPressed = true;
     }
@@ -105,6 +118,7 @@ public class Tank {
         x -= vx;
         y -= vy;
         checkBorder();
+        centerScreen();
     }
 
     private void moveForwards() {
@@ -113,25 +127,31 @@ public class Tank {
         x += vx;
         y += vy;
         checkBorder();
+        centerScreen();
     }
 
     private void centerScreen() {
-        this.screen_x = this.x - (float) GameConstants.GAME_WORLD_WIDTH / 4;
-        this.screen_y = this.y - (float) GameConstants.GAME_WORLD_HEIGHT / 2;
+        // Clamp the tank's x and y to remain within the boundaries of the screen
+        this.screen_x = clamp(this.x - (float) GameConstants.GAME_SCREEN_WIDTH / 4,
+                0,
+                GameConstants.GAME_WORLD_WIDTH - (float) GameConstants.GAME_SCREEN_WIDTH / 2);
+        this.screen_y = clamp(this.y - (float) GameConstants.GAME_SCREEN_HEIGHT / 2,
+                0,
+                GameConstants.GAME_WORLD_HEIGHT - GameConstants.GAME_SCREEN_HEIGHT);
     }
 
     private void checkBorder() {
         if (x < 30) {
             x = 30;
         }
-        if (x >= GameConstants.GAME_SCREEN_WIDTH - 80) {
-            x = GameConstants.GAME_SCREEN_WIDTH - 80;
+        if (x >= GameConstants.GAME_WORLD_WIDTH - 80) {
+            x = GameConstants.GAME_WORLD_WIDTH - 80;
         }
         if (y < 40) {
             y = 40;
         }
-        if (y >= GameConstants.GAME_SCREEN_HEIGHT - 80) {
-            y = GameConstants.GAME_SCREEN_HEIGHT - 80;
+        if (y >= GameConstants.GAME_WORLD_HEIGHT - 80) {
+            y = GameConstants.GAME_WORLD_HEIGHT - 80;
         }
     }
 

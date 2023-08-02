@@ -129,10 +129,20 @@ public class GameWorld extends JPanel implements Runnable {
     }
 
     public void renderSplitScreen(Graphics2D g2, BufferedImage world) {
-        BufferedImage lh = world.getSubimage((int) this.t1.getX(), (int) this.t1.getY(), GameConstants.GAME_SCREEN_WIDTH / 2, GameConstants.GAME_SCREEN_HEIGHT);
-        BufferedImage rh = world.getSubimage((int) this.t2.getX(), (int) this.t2.getY(), GameConstants.GAME_SCREEN_WIDTH / 2, GameConstants.GAME_SCREEN_HEIGHT);
+        int subImageWidth = GameConstants.GAME_SCREEN_WIDTH / 2;
+        int subImageHeight = GameConstants.GAME_SCREEN_HEIGHT;
+
+        // Make sure that the screen_x and screen_y values are within valid bounds
+        int t1X = (int) Tank.clamp(t1.getScreen_x(), 0, GameConstants.GAME_WORLD_WIDTH - subImageWidth);
+        int t1Y = (int) Tank.clamp(t1.getScreen_y(), 0, GameConstants.GAME_WORLD_HEIGHT - subImageHeight);
+        int t2X = (int) Tank.clamp(t2.getScreen_x(), 0, GameConstants.GAME_WORLD_WIDTH - subImageWidth);
+        int t2Y = (int) Tank.clamp(t2.getScreen_y(), 0, GameConstants.GAME_WORLD_HEIGHT - subImageHeight);
+
+        // Create subimages for the left and right halves of the split-screen view
+        BufferedImage lh = world.getSubimage(t1X, t1Y, subImageWidth, subImageHeight);
+        BufferedImage rh = world.getSubimage(t2X, t2Y, subImageWidth, subImageHeight);
         g2.drawImage(lh, 0, 0, null);
-        g2.drawImage(rh, GameConstants.GAME_SCREEN_WIDTH / 2 + 1, 0, null);
+        g2.drawImage(rh, GameConstants.GAME_SCREEN_WIDTH / 2+2, 0, null);
     }
 
     @Override
