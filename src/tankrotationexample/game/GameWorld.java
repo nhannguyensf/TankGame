@@ -67,8 +67,8 @@ public class GameWorld extends JPanel implements Runnable {
      * initial state as well.
      */
     public void InitializeGame() {
-        this.world = new BufferedImage(GameConstants.GAME_SCREEN_WIDTH,
-                GameConstants.GAME_SCREEN_HEIGHT,
+        this.world = new BufferedImage(GameConstants.GAME_WORLD_WIDTH,
+                GameConstants.GAME_WORLD_HEIGHT,
                 BufferedImage.TYPE_INT_RGB);
 /**
  * 0 --> Nothing
@@ -105,18 +105,35 @@ public class GameWorld extends JPanel implements Runnable {
         this.lf.getJf().addKeyListener(tc2);
     }
 
+    //    private void drawFloor(Graphics2D buffer) {
+//        BufferedImage floor = ResourceManager.getSprite("floor");
+//        buffer.drawImage(floor, 0, 0, null);
+//    }
     private void drawFloor(Graphics2D buffer) {
         BufferedImage floor = ResourceManager.getSprite("floor");
-        buffer.drawImage(floor, 0, 0, null);
+        for (int i = 0; i < GameConstants.GAME_WORLD_WIDTH; i += 320) {
+            for (int j = 0; j < GameConstants.GAME_WORLD_HEIGHT; j += 240) {
+                buffer.drawImage(floor, i, j, null);
+            }
+        }
     }
-//    private void drawFloor(Graphics2D buffer) {
-//        BufferedImage floor = ResourceManager.getSprite("floor");
-//        for (int i = 0; i < GameConstants.GAME_WORLD_WIDTH; i += 320) {
-//            for (int j = 0; j < GameConstants.GAME_WORLD_HEIGHT; j += 240) {
-//                buffer.drawImage(floor, i, j, null);
-//            }
-//        }
-//    }
+
+    private void renderMinimap(Graphics2D g2, BufferedImage world) {
+        BufferedImage mm = world.getSubimage(0, 0, GameConstants.GAME_WORLD_WIDTH, GameConstants.GAME_WORLD_HEIGHT);
+        g2.scale(.1, .1);
+        g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.7f));
+        g2.drawImage(mm,
+                (GameConstants.GAME_SCREEN_WIDTH * 10 - GameConstants.GAME_WORLD_WIDTH) / 2,
+                (GameConstants.GAME_SCREEN_HEIGHT * 10 - GameConstants.GAME_WORLD_HEIGHT / 2) - 1100,
+                null);
+    }
+
+    public void renderSplitScreen(Graphics2D g2, BufferedImage world) {
+        BufferedImage lh = world.getSubimage((int) this.t1.getX(), (int) this.t1.getY(), GameConstants.GAME_SCREEN_WIDTH / 2, GameConstants.GAME_SCREEN_HEIGHT);
+        BufferedImage rh = world.getSubimage((int) this.t2.getX(), (int) this.t2.getY(), GameConstants.GAME_SCREEN_WIDTH / 2, GameConstants.GAME_SCREEN_HEIGHT);
+        g2.drawImage(lh, 0, 0, null);
+        g2.drawImage(rh, GameConstants.GAME_SCREEN_WIDTH / 2 + 1, 0, null);
+    }
 
     @Override
     public void paintComponent(Graphics g) {
@@ -128,6 +145,7 @@ public class GameWorld extends JPanel implements Runnable {
         this.gobjs.forEach(gameObject -> gameObject.drawImage(buffer));
         this.t1.drawImage(buffer);
         this.t2.drawImage(buffer);
-        g2.drawImage(world, 0, 0, null);
+        renderSplitScreen(g2, world);
+        renderMinimap(g2, world);
     }
 }

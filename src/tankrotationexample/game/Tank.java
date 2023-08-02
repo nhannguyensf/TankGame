@@ -9,24 +9,26 @@ import java.awt.image.BufferedImage;
 
 public class Tank {
 
+    static ResourcePool<Bullet> bPool;
+
+    static {
+        bPool = new ResourcePool<>("bullet", 300);
+        bPool.fillPool(Bullet.class, 300);
+    }
+
     private float x;
     private float y;
+    private float screen_x, screen_y;
     private float vx;
     private float vy;
     private float angle;
-
     private float R = 3;
     private float ROTATIONSPEED = 3.0f;
-static ResourcePool<Bullet> bPool;
     private BufferedImage img;
     private boolean UpPressed;
     private boolean DownPressed;
     private boolean RightPressed;
     private boolean LeftPressed;
-    static {
-        bPool=new ResourcePool<>("bullet", 300);
-        bPool.fillPool(Bullet.class,300);
-    }
 
     Tank(float x, float y, float vx, float vy, float angle, BufferedImage img) {
         this.x = x;
@@ -35,14 +37,6 @@ static ResourcePool<Bullet> bPool;
         this.vy = vy;
         this.img = img;
         this.angle = angle;
-    }
-
-    void setX(float x) {
-        this.x = x;
-    }
-
-    void setY(float y) {
-        this.y = y;
     }
 
     void toggleUpPressed() {
@@ -121,6 +115,10 @@ static ResourcePool<Bullet> bPool;
         checkBorder();
     }
 
+    private void centerScreen() {
+        this.screen_x = this.x - (float) GameConstants.GAME_WORLD_WIDTH / 4;
+        this.screen_y = this.y - (float) GameConstants.GAME_WORLD_HEIGHT / 2;
+    }
 
     private void checkBorder() {
         if (x < 30) {
@@ -142,7 +140,6 @@ static ResourcePool<Bullet> bPool;
         return "x=" + x + ", y=" + y + ", angle=" + angle;
     }
 
-
     void drawImage(Graphics g) {
         AffineTransform rotation = AffineTransform.getTranslateInstance(x, y);
         rotation.rotate(Math.toRadians(angle), this.img.getWidth() / 2.0, this.img.getHeight() / 2.0);
@@ -152,5 +149,21 @@ static ResourcePool<Bullet> bPool;
 //        g2d.rotate(Math.toRadians(angle), bounds.x + bounds.width/2, bounds.y + bounds.height/2);
 //        g2d.drawRect((int) x, (int) y, this.img.getWidth(), this.img.getHeight());
 
+    }
+
+    public float getX() {
+        return this.x;
+    }
+
+    void setX(float x) {
+        this.x = x;
+    }
+
+    public float getY() {
+        return this.y;
+    }
+
+    void setY(float y) {
+        this.y = y;
     }
 }
