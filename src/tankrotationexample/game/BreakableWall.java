@@ -30,6 +30,6 @@ public class BreakableWall extends GameObject {
 
     @Override
     public String toString() {
-        return "Breakable wall at: x=" + x + ", y=" + y;
+        return "BreakableWall at: x=" + x + ", y=" + y;
     }
 }
