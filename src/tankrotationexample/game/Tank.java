@@ -10,7 +10,7 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Tank {
+public class Tank extends GameObject {
 
 //    static ResourcePool<Bullet> bPool;
 //
@@ -21,7 +21,7 @@ public class Tank {
 
     List<Bullet> ammo = new ArrayList<>();
     long timeSinceLastShot = 0L;
-    long cooldown = 4000;
+    long cooldown = 3000;
 
     private float x;
     private float y;
@@ -29,14 +29,15 @@ public class Tank {
     private float vx;
     private float vy;
     private float angle;
-    private float R = 3;
-    private float ROTATIONSPEED = 3.0f;
+    private float R = 2;
+    private float ROTATIONSPEED = 2.0f;
     private BufferedImage img;
     private boolean UpPressed;
     private boolean DownPressed;
     private boolean RightPressed;
     private boolean LeftPressed;
     private boolean shootPressed;
+    private Rectangle hitBox;
 
     Tank(float x, float y, float vx, float vy, float angle, BufferedImage img) {
         this.x = x;
@@ -45,11 +46,16 @@ public class Tank {
         this.vy = vy;
         this.img = img;
         this.angle = angle;
+        this.hitBox = new Rectangle((int) x, (int) y, this.img.getWidth(), this.img.getHeight());
     }
 
     // A helper function to clamp a value between a minimum and maximum
     static float clamp(float value, float min, float max) {
         return Math.max(min, Math.min(max, value));
+    }
+
+    public Rectangle getHitBox() {
+        return this.hitBox.getBounds();
     }
 
     public float getX() {
@@ -74,6 +80,16 @@ public class Tank {
 
     public float getScreen_y() {
         return screen_y;
+    }
+
+    public void collides(GameObject with) {
+        if (with instanceof Bullet) {
+            //lose life
+        } else if (with instanceof Wall) {
+            //stop
+        } else if (with instanceof PowerUp) {
+            ((PowerUp) with).applyPowerUp(this);
+        }
     }
 
     void toggleUpPressed() {
@@ -134,9 +150,16 @@ public class Tank {
         }
         if (this.shootPressed && ((this.timeSinceLastShot + this.cooldown) < System.currentTimeMillis())) {
             this.timeSinceLastShot = System.currentTimeMillis();
-            this.ammo.add(new Bullet(x, y, ResourceManager.getSprite("bullet"), angle));
+
+            // Define the offset to keep the ammo further from the tank
+            final float BULLET_OFFSET = 10.0f;
+            // Calculate the offset for the x and y coordinates based on the angle
+            float bulletX = x + ((float) img.getWidth() / 2 - BULLET_OFFSET / 2) + (float) (Math.cos(Math.toRadians(angle)) * ((img.getWidth() / 2) + BULLET_OFFSET));
+            float bulletY = y + ((float) img.getHeight() / 2 - BULLET_OFFSET / 2) + (float) (Math.sin(Math.toRadians(angle)) * ((img.getWidth() / 2) + BULLET_OFFSET));
+            this.ammo.add(new Bullet(bulletX, bulletY, ResourceManager.getSprite("bullet"), angle));
         }
         this.ammo.forEach(Bullet::update);
+        this.hitBox.setLocation((int) x, (int) y);
     }
 
     private void rotateLeft() {
@@ -192,10 +215,10 @@ public class Tank {
 
     @Override
     public String toString() {
-        return "x=" + x + ", y=" + y + ", angle=" + angle;
+        return "Tank at: x=" + x + ", y=" + y + ", angle=" + angle;
     }
 
-    void drawImage(Graphics g) {
+    public void drawImage(Graphics g) {
         AffineTransform rotation = AffineTransform.getTranslateInstance(x, y);
         rotation.rotate(Math.toRadians(angle), this.img.getWidth() / 2.0, this.img.getHeight() / 2.0);
         Graphics2D g2d = (Graphics2D) g;
@@ -205,13 +228,13 @@ public class Tank {
 
         g2d.setColor(Color.YELLOW);
         g2d.drawRect((int) x - 20, (int) y - 20, 100, 5);
-        long currentWidth = 100 - ((this.timeSinceLastShot + this.cooldown) - System.currentTimeMillis()) / 40;
+        long currentWidth = 100 - ((this.timeSinceLastShot + this.cooldown) - System.currentTimeMillis()) / (this.cooldown / 100);
         if (currentWidth > 100) {
             currentWidth = 100;
         }
         g2d.fillRect((int) x - 20, (int) y - 20, (int) currentWidth, 5);
         if (currentWidth < 100) {
-            g2d.drawString("Reloading...", (int) x + 82, (int) y-12 );
+            g2d.drawString("Reloading...", (int) x + 82, (int) y - 12);
         }
     }
 }

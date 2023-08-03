@@ -12,9 +12,15 @@ public abstract class GameObject {
             case "4" -> new Health(x, y, ResourceManager.getSprite("health"));
             case "5" -> new Speed(x, y, ResourceManager.getSprite("speed"));
             case "6" -> new Shield(x, y, ResourceManager.getSprite("shield"));
-            default -> throw new UnsupportedOperationException();
+            case "11" -> new Tank(x, y, 0, 0, (short) 0, ResourceManager.getSprite("tank1"));
+            case "22" -> new Tank(x, y, 0, 0, (short) 180, ResourceManager.getSprite("tank2"));
+            default -> throw new IllegalArgumentException("%s type not supported".formatted(type));
         };
     }
 
+    public abstract void collides(GameObject obj2);
+
     public abstract void drawImage(Graphics g);
+
+    public abstract Rectangle getHitBox();
 }

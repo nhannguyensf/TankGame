@@ -14,7 +14,7 @@ public class Bullet extends GameObject {
     private float angle;
     private float R = 6;
     private BufferedImage img;
-
+    private Rectangle hitBox;
 
     Bullet(float x, float y, BufferedImage img, float angle) {
         this.x = x;
@@ -23,6 +23,11 @@ public class Bullet extends GameObject {
         this.vy = 0;
         this.img = img;
         this.angle = angle;
+        this.hitBox = new Rectangle((int) x, (int) y, this.img.getWidth(), this.img.getHeight());
+    }
+
+    public Rectangle getHitBox() {
+        return this.hitBox.getBounds();
     }
 
     public float getX() {
@@ -39,6 +44,7 @@ public class Bullet extends GameObject {
         x += vx;
         y += vy;
         checkBorder();
+        this.hitBox.setLocation((int) x, (int) y);
     }
 
     private void checkBorder() {
@@ -61,10 +67,15 @@ public class Bullet extends GameObject {
         return "x=" + x + ", y=" + y + ", angle=" + angle;
     }
 
+    @Override
+    public void collides(GameObject obj2) {
+
+    }
+
     public void drawImage(Graphics g) {
         AffineTransform rotation = AffineTransform.getTranslateInstance(x, y);
         rotation.rotate(Math.toRadians(angle), this.img.getWidth() / 2.0, this.img.getHeight() / 2.0);
-        rotation.scale(3,3);
+        rotation.scale(2, 2);
         Graphics2D g2d = (Graphics2D) g;
         g2d.drawImage(this.img, rotation, null);
     }
