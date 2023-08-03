@@ -18,6 +18,7 @@ public class Bullet extends GameObject {
     private BufferedImage img;
     private Rectangle hitBox;
 
+
     Bullet(float x, float y, BufferedImage img, float angle) {
         this.x = x;
         this.y = y;
@@ -31,6 +32,7 @@ public class Bullet extends GameObject {
 
     public Rectangle getHitBox() {
         return this.hitBox.getBounds();
+
     }
 
     public float getX() {

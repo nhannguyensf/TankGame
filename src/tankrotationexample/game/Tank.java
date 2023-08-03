@@ -46,11 +46,11 @@ public class Tank extends GameObject {
     static float clamp(float value, float min, float max) {
         return Math.max(min, Math.min(max, value));
     }
-
+  
     public Rectangle getHitBox() {
         return this.hitBox.getBounds();
     }
-
+  
     public float getX() {
         return this.x;
     }
@@ -166,6 +166,7 @@ public class Tank extends GameObject {
         if (this.RightPressed) {
             this.rotateRight();
         }
+      
         if (this.shootPressed && ((this.timeSinceLastShot + this.reloadAmmo) < System.currentTimeMillis())) {
             this.timeSinceLastShot = System.currentTimeMillis();
 
