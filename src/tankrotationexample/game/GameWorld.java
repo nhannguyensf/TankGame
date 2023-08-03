@@ -40,7 +40,7 @@ public class GameWorld extends JPanel implements Runnable {
                 this.tick++;
                 this.t1.update(); // update tank
                 this.t2.update(); // update tank
-
+                this.checkCollision();
                 this.repaint();   // redraw game
                 /*
                  * Sleep for 1000/144 ms (~6.9ms). This is done to have our
@@ -50,6 +50,24 @@ public class GameWorld extends JPanel implements Runnable {
             }
         } catch (InterruptedException ignored) {
             System.out.println(ignored);
+        }
+    }
+
+    private void checkCollision() {
+        for (int i = 0; i < this.gobjs.size(); i++) {
+            GameObject obj1 = this.gobjs.get(i);
+            if (obj1 instanceof Wall || obj1 instanceof Health || obj1 instanceof Speed || obj1 instanceof Shield) {
+                continue;
+            }
+            for (int j = 0; j < this.gobjs.size(); j++) {
+                if (i == j) continue;
+                GameObject obj2 = this.gobjs.get(j);
+                if (obj2 instanceof Tank) continue;
+                if (obj1.getHitBox().intersects(obj2.getHitBox())) {
+                    System.out.println(obj1 + " HAS HIT " + obj2);
+                    obj1.collides(obj2);
+                }
+            }
         }
     }
 
@@ -93,16 +111,19 @@ public class GameWorld extends JPanel implements Runnable {
                 row++;
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            System.out.println("Error while reading map");
+            System.exit(-2);
         }
 
-
-        t1 = new Tank(300, 300, 0, 0, (short) 0, ResourceManager.getSprite("tank1"));
+        t1 = (Tank) GameObject.newInstance("11", 100, 100);
         TankControl tc1 = new TankControl(t1, KeyEvent.VK_W, KeyEvent.VK_S, KeyEvent.VK_A, KeyEvent.VK_D, KeyEvent.VK_SPACE);
         this.lf.getJf().addKeyListener(tc1);
-        t2 = new Tank(700, 1000, 0, 0, (short) 180, ResourceManager.getSprite("tank2"));
+        t2 = (Tank) GameObject.newInstance("22", GameConstants.GAME_WORLD_WIDTH - 100, GameConstants.GAME_WORLD_HEIGHT - 100);
         TankControl tc2 = new TankControl(t2, KeyEvent.VK_UP, KeyEvent.VK_DOWN, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, KeyEvent.VK_NUMPAD0);
         this.lf.getJf().addKeyListener(tc2);
+
+        this.gobjs.add(t1);
+        this.gobjs.add(t2);
     }
 
     //    private void drawFloor(Graphics2D buffer) {
@@ -128,21 +149,40 @@ public class GameWorld extends JPanel implements Runnable {
                 null);
     }
 
+    //    public void renderSplitScreen(Graphics2D g2, BufferedImage world) {
+//        int subImageWidth = GameConstants.GAME_SCREEN_WIDTH / 2;
+//        int subImageHeight = GameConstants.GAME_SCREEN_HEIGHT;
+//
+//        // Make sure that the screen_x and screen_y values are within valid bounds
+//        int t1X = (int) Tank.clamp(t1.getScreen_x(), 0, GameConstants.GAME_WORLD_WIDTH - subImageWidth);
+//        int t1Y = (int) Tank.clamp(t1.getScreen_y(), 0, GameConstants.GAME_WORLD_HEIGHT - subImageHeight);
+//        int t2X = (int) Tank.clamp(t2.getScreen_x(), 0, GameConstants.GAME_WORLD_WIDTH - subImageWidth);
+//        int t2Y = (int) Tank.clamp(t2.getScreen_y(), 0, GameConstants.GAME_WORLD_HEIGHT - subImageHeight);
+//
+//        // Create subimages for the left and right halves of the split-screen view
+//        BufferedImage lh = world.getSubimage(t1X, t1Y, subImageWidth, subImageHeight);
+//        BufferedImage rh = world.getSubimage(t2X, t2Y, subImageWidth, subImageHeight);
+//        g2.drawImage(lh, 0, 0, null);
+//        g2.drawImage(rh, GameConstants.GAME_SCREEN_WIDTH / 2 + 2, 0, null);
+//    }
     public void renderSplitScreen(Graphics2D g2, BufferedImage world) {
         int subImageWidth = GameConstants.GAME_SCREEN_WIDTH / 2;
         int subImageHeight = GameConstants.GAME_SCREEN_HEIGHT;
 
-        // Make sure that the screen_x and screen_y values are within valid bounds
-        int t1X = (int) Tank.clamp(t1.getScreen_x(), 0, GameConstants.GAME_WORLD_WIDTH - subImageWidth);
-        int t1Y = (int) Tank.clamp(t1.getScreen_y(), 0, GameConstants.GAME_WORLD_HEIGHT - subImageHeight);
-        int t2X = (int) Tank.clamp(t2.getScreen_x(), 0, GameConstants.GAME_WORLD_WIDTH - subImageWidth);
-        int t2Y = (int) Tank.clamp(t2.getScreen_y(), 0, GameConstants.GAME_WORLD_HEIGHT - subImageHeight);
+        int t1X = (int) (t1.getX() - subImageWidth / 2);
+        int t1Y = (int) (t1.getY() - subImageHeight / 2);
+        int t2X = (int) (t2.getX() - subImageWidth / 2);
+        int t2Y = (int) (t2.getY() - subImageHeight / 2);
 
-        // Create subimages for the left and right halves of the split-screen view
+        t1X = Math.max(0, Math.min(t1X, GameConstants.GAME_WORLD_WIDTH - subImageWidth));
+        t1Y = Math.max(0, Math.min(t1Y, GameConstants.GAME_WORLD_HEIGHT - subImageHeight));
+        t2X = Math.max(0, Math.min(t2X, GameConstants.GAME_WORLD_WIDTH - subImageWidth));
+        t2Y = Math.max(0, Math.min(t2Y, GameConstants.GAME_WORLD_HEIGHT - subImageHeight));
+
         BufferedImage lh = world.getSubimage(t1X, t1Y, subImageWidth, subImageHeight);
         BufferedImage rh = world.getSubimage(t2X, t2Y, subImageWidth, subImageHeight);
         g2.drawImage(lh, 0, 0, null);
-        g2.drawImage(rh, GameConstants.GAME_SCREEN_WIDTH / 2+2, 0, null);
+        g2.drawImage(rh, GameConstants.GAME_SCREEN_WIDTH / 2 + 2, 0, null);
     }
 
     @Override
