@@ -14,6 +14,8 @@ public abstract class GameObject {
             case "6" -> new Shield(x, y, ResourceManager.getSprite("shield"));
             case "11" -> new Tank(x, y, 0, 0, (short) 0, ResourceManager.getSprite("tank1"));
             case "22" -> new Tank(x, y, 0, 0, (short) 180, ResourceManager.getSprite("tank2"));
+            case "33" -> new BotAI(x, y, 0, 0, (short) 0, ResourceManager.getSprite("tankAI"));
+            case "44" -> new BotAI(x, y, 0, 0, (short) 180, ResourceManager.getSprite("tankAI"));
             default -> throw new IllegalArgumentException("%s type not supported".formatted(type));
         };
     }

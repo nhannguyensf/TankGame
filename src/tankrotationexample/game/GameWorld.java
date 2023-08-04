@@ -23,6 +23,8 @@ public class GameWorld extends JPanel implements Runnable {
     private BufferedImage world;
     private Tank t1;
     private Tank t2;
+    private BotAI bot1;
+    private BotAI bot2;
     private long tick = 0;
 
     /**
@@ -40,6 +42,8 @@ public class GameWorld extends JPanel implements Runnable {
                 this.tick++;
                 this.t1.update(); // update tank
                 this.t2.update(); // update tank
+                this.bot1.moveAI(t1.getX(), t1.getY()); // update AI tank1 to follow t1
+                this.bot2.moveAI(t2.getX(), t2.getY()); // update AI tank2 to follow t2
                 this.checkCollision();
                 this.repaint();   // redraw game
                 /*
@@ -122,7 +126,11 @@ public class GameWorld extends JPanel implements Runnable {
         t2 = (Tank) GameObject.newInstance("22", GameConstants.GAME_WORLD_WIDTH - 100, GameConstants.GAME_WORLD_HEIGHT - 100);
         TankControl tc2 = new TankControl(t2, KeyEvent.VK_UP, KeyEvent.VK_DOWN, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, KeyEvent.VK_NUMPAD0);
         this.lf.getJf().addKeyListener(tc2);
+        bot1 = (BotAI) GameObject.newInstance("33", 100, GameConstants.GAME_WORLD_HEIGHT - 100);
+        bot2 = (BotAI) GameObject.newInstance("44", GameConstants.GAME_WORLD_WIDTH - 100, 100);
 
+        this.gobjs.add(bot1);
+        this.gobjs.add(bot2);
         this.gobjs.add(t1);
         this.gobjs.add(t2);
     }

@@ -226,6 +226,19 @@ public class Tank extends GameObject {
 //        }
     }
 
+    public void moveAI(float targetX, float targetY) {
+        float deltaX = targetX - x;
+        float deltaY = targetY - y;
+        float targetAngle = (float) Math.toDegrees(Math.atan2(deltaY, deltaX));
+
+        if (Math.abs(targetAngle - angle) > ROTATIONSPEED) {
+            if (angle < targetAngle) rotateRight();
+            else rotateLeft();
+        } else {
+            moveForwards();
+        }
+    }
+
     private void rotateLeft() {
         this.angle -= this.ROTATIONSPEED;
     }
