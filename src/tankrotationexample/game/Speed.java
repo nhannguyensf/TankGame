@@ -3,20 +3,44 @@ package tankrotationexample.game;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
-public class Speed extends GameObject {
+public class Speed extends GameObject implements PowerUp {
+    public static int getSpeedBoost() {
+        return speedBoost;
+    }
+
+    private static final int speedBoost = 3;
     float x, y;
     BufferedImage img;
     private Rectangle hitBox;
+    private boolean isActive;
 
     public Speed(float x, float y, BufferedImage img) {
         this.x = x;
         this.y = y;
         this.img = img;
         this.hitBox = new Rectangle((int) x, (int) y, this.img.getWidth(), this.img.getHeight());
+        this.isActive = true;
     }
 
     public Rectangle getHitBox() {
         return this.hitBox.getBounds();
+    }
+
+    @Override
+    public void applyPowerUp(Tank tank) {
+        tank.increaseSpeed();
+        onHit();
+        System.out.println("Tank is speeding up");
+    }
+
+    @Override
+    public void onHit() {
+        this.isActive = false;
+    }
+
+    @Override
+    public boolean isActive() {
+        return this.isActive;
     }
 
     @Override

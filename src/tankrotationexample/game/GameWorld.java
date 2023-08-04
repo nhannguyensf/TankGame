@@ -66,6 +66,7 @@ public class GameWorld extends JPanel implements Runnable {
                 if (obj1.getHitBox().intersects(obj2.getHitBox())) {
                     System.out.println(obj1 + " HAS HIT " + obj2);
                     obj1.collides(obj2);
+                    this.gobjs.removeIf(gameObject -> !gameObject.isActive());
                 }
             }
         }
@@ -149,22 +150,6 @@ public class GameWorld extends JPanel implements Runnable {
                 null);
     }
 
-    //    public void renderSplitScreen(Graphics2D g2, BufferedImage world) {
-//        int subImageWidth = GameConstants.GAME_SCREEN_WIDTH / 2;
-//        int subImageHeight = GameConstants.GAME_SCREEN_HEIGHT;
-//
-//        // Make sure that the screen_x and screen_y values are within valid bounds
-//        int t1X = (int) Tank.clamp(t1.getScreen_x(), 0, GameConstants.GAME_WORLD_WIDTH - subImageWidth);
-//        int t1Y = (int) Tank.clamp(t1.getScreen_y(), 0, GameConstants.GAME_WORLD_HEIGHT - subImageHeight);
-//        int t2X = (int) Tank.clamp(t2.getScreen_x(), 0, GameConstants.GAME_WORLD_WIDTH - subImageWidth);
-//        int t2Y = (int) Tank.clamp(t2.getScreen_y(), 0, GameConstants.GAME_WORLD_HEIGHT - subImageHeight);
-//
-//        // Create subimages for the left and right halves of the split-screen view
-//        BufferedImage lh = world.getSubimage(t1X, t1Y, subImageWidth, subImageHeight);
-//        BufferedImage rh = world.getSubimage(t2X, t2Y, subImageWidth, subImageHeight);
-//        g2.drawImage(lh, 0, 0, null);
-//        g2.drawImage(rh, GameConstants.GAME_SCREEN_WIDTH / 2 + 2, 0, null);
-//    }
     public void renderSplitScreen(Graphics2D g2, BufferedImage world) {
         int subImageWidth = GameConstants.GAME_SCREEN_WIDTH / 2;
         int subImageHeight = GameConstants.GAME_SCREEN_HEIGHT;
@@ -192,7 +177,12 @@ public class GameWorld extends JPanel implements Runnable {
         buffer.setColor(Color.BLACK);
         buffer.fillRect(0, 0, GameConstants.GAME_SCREEN_WIDTH, GameConstants.GAME_SCREEN_HEIGHT);
         this.drawFloor(buffer);
-        this.gobjs.forEach(gameObject -> gameObject.drawImage(buffer));
+//        this.gobjs.forEach(gameObject -> gameObject.drawImage(buffer));
+        for (GameObject gameObject : this.gobjs) {
+            if (gameObject.isActive()) {
+                gameObject.drawImage(buffer);
+            }
+        }
         this.t1.drawImage(buffer);
         this.t2.drawImage(buffer);
         renderSplitScreen(g2, world);

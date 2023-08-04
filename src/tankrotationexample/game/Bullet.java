@@ -8,7 +8,7 @@ import java.awt.image.BufferedImage;
 
 public class Bullet extends GameObject {
     private int bulletDamage = 20;
-    private boolean active;
+    private boolean isActive;
     private float x;
     private float y;
     private float vx;
@@ -26,13 +26,18 @@ public class Bullet extends GameObject {
         this.vy = 0;
         this.img = img;
         this.angle = angle;
-        this.active = true;
+        this.isActive = true;
         this.hitBox = new Rectangle((int) x, (int) y, this.img.getWidth(), this.img.getHeight());
     }
 
     public Rectangle getHitBox() {
         return this.hitBox.getBounds();
 
+    }
+
+    @Override
+    public boolean isActive() {
+        return this.isActive;
     }
 
     public float getX() {
@@ -100,11 +105,11 @@ public class Bullet extends GameObject {
     }
 
     private void handleBreakableWallCollision(BreakableWall with) {
-        this.active = false;
+        this.isActive = false;
     }
 
     private void handleWallCollision() {
-        this.active = false;
+        this.isActive = false;
     }
 
     public void drawImage(Graphics g) {
@@ -119,7 +124,7 @@ public class Bullet extends GameObject {
         return this.bulletDamage;
     }
 
-    public boolean isActive() {
-        return this.active;
+    public void onHit() {
+        this.isActive = false;
     }
 }

@@ -23,4 +23,6 @@ public abstract class GameObject {
     public abstract void drawImage(Graphics g);
 
     public abstract Rectangle getHitBox();
+
+    public abstract boolean isActive();
 }

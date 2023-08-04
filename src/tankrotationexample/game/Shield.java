@@ -3,20 +3,37 @@ package tankrotationexample.game;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
-public class Shield extends GameObject {
+public class Shield extends GameObject implements PowerUp {
     float x, y;
     BufferedImage img;
     private Rectangle hitBox;
+    private boolean isActive;
 
     public Shield(float x, float y, BufferedImage img) {
         this.x = x;
         this.y = y;
         this.img = img;
         this.hitBox = new Rectangle((int) x, (int) y, this.img.getWidth(), this.img.getHeight());
+        this.isActive = true;
     }
 
     public Rectangle getHitBox() {
         return this.hitBox.getBounds();
+    }
+
+    @Override
+    public void applyPowerUp(Tank tank) {
+
+    }
+
+    @Override
+    public void onHit() {
+        this.isActive = false;
+    }
+
+    @Override
+    public boolean isActive() {
+        return this.isActive;
     }
 
     @Override
