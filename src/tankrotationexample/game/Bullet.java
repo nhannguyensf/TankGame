@@ -50,12 +50,14 @@ public class Bullet extends GameObject {
     }
 
     void update() {
-        vx = Math.round(R * Math.cos(Math.toRadians(angle)));
-        vy = Math.round(R * Math.sin(Math.toRadians(angle)));
-        x += vx;
-        y += vy;
-        checkBorder();
-        this.hitBox.setLocation((int) x, (int) y);
+        if (this.isActive) {
+            vx = Math.round(R * Math.cos(Math.toRadians(angle)));
+            vy = Math.round(R * Math.sin(Math.toRadians(angle)));
+            x += vx;
+            y += vy;
+            checkBorder();
+            this.hitBox.setLocation((int) x, (int) y);
+        }
     }
 
     private void checkBorder() {
@@ -75,7 +77,7 @@ public class Bullet extends GameObject {
 
     @Override
     public String toString() {
-        return "x=" + x + ", y=" + y + ", angle=" + angle;
+        return "A bullet";
     }
 
     @Override
@@ -96,13 +98,18 @@ public class Bullet extends GameObject {
     }
 
     private void handleTankCollision(Tank with) {
+        this.isActive = false;
         with.health -= this.bulletDamage;
 
-        if (with.health < 0) {
+        if (with.health <= 0) {
             with.health = 0;
-            System.out.println("Tank health: " + with.health);
-            // Handle the situation when the tank's health drops to zero, such as destroying the tank
+            with.live -= 1;
+            System.out.println("~~~Tank died~~~");
+            if (with.live <= 0) {
+                with.isDead = true;
+            }
         }
+        System.out.println("Tank health: " + with.health);
     }
 
     private void handleBreakableWallCollision(BreakableWall with) {
@@ -118,7 +125,9 @@ public class Bullet extends GameObject {
         rotation.rotate(Math.toRadians(angle), this.img.getWidth() / 2.0, this.img.getHeight() / 2.0);
         rotation.scale(2, 2);
         Graphics2D g2d = (Graphics2D) g;
-        g2d.drawImage(this.img, rotation, null);
+        if (this.isActive) {
+            g2d.drawImage(this.img, rotation, null);
+        }
     }
 
     public int getDamage() {

@@ -14,11 +14,16 @@ public class Tank extends GameObject {
     private static final float MIN_SPEED = 2;
     private static final float MAX_SPEED = MIN_SPEED + Speed.getSpeedBoost();
     private static final long SPEED_INCREASE_DURATION = 3000;
+    private static final int MAX_LIVE = 3;
+    private static float START_X;
+    private static float START_Y;
     private static float SPEED = MIN_SPEED;
     private final long reloadAmmo = 3000;
     private final float ROTATIONSPEED = 2.0f;
+    public boolean isDead = false;
     List<Bullet> ammo = new ArrayList<>();
     int health = MAX_HEALTH;
+    int live = MAX_LIVE;
     private Rectangle hitBox;
     private BufferedImage img = null;
     private long lastSpeedIncreaseTime = 0L;
@@ -33,17 +38,21 @@ public class Tank extends GameObject {
     private boolean RightPressed;
     private boolean LeftPressed;
     private boolean shootPressed;
-    private boolean wasHit;
+    private GameWorld gameWorld;
 
-    public Tank(float x, float y, float vx, float vy, float angle, BufferedImage img) {
+
+    public Tank(float x, float y, float vx, float vy, float angle, BufferedImage img, GameWorld gameWorld) {
         this.x = x;
         this.y = y;
         this.vx = vx;
         this.vy = vy;
         this.img = img;
         this.angle = angle;
+        START_X = x;
+        START_Y = y;
         hitBox = null;
         this.hitBox = new Rectangle((int) x, (int) y, this.img.getWidth(), this.img.getHeight());
+        this.gameWorld = gameWorld;
     }
 
     public Tank() {
@@ -118,7 +127,7 @@ public class Tank extends GameObject {
     }
 
     public void increaseHealth() {
-        this.health -= Health.getHealthBoost();
+        this.health += Health.getHealthBoost();
         System.out.println("Health = " + this.health);
         if (this.health > MAX_HEALTH) {
             this.health = MAX_HEALTH;
@@ -132,13 +141,21 @@ public class Tank extends GameObject {
             System.out.println("Speed = " + SPEED + " at " + System.currentTimeMillis() + "ms");
         }
     }
-//    public void increaseSpeed() {
-//        if (SPEED < MAX_SPEED || (System.currentTimeMillis() - this.lastSpeedIncreaseTime) < speedBoostDuration) {
-//            SPEED = MAX_SPEED;
-//            this.lastSpeedIncreaseTime = System.currentTimeMillis();
-//            System.out.println("Speed = " + SPEED + " at " + System.currentTimeMillis() + "ms");
-//        }
-//    }
+
+    public void increaseLife() {
+        this.live += LivesUp.getLivesBoost();
+        if (this.live >= MAX_LIVE) {
+            this.live = MAX_LIVE;
+        }
+        System.out.println("Tank lives = " + this.live);
+    }
+
+    private void respawn() {
+        this.isDead = false; // reset the isDead flag
+//        this.x = START_X;
+//        this.y = START_Y;
+        this.health = MAX_HEALTH; // reset health
+    }
 
     void toggleUpPressed() {
         this.UpPressed = true;
@@ -201,19 +218,15 @@ public class Tank extends GameObject {
             this.timeSinceLastShot = System.currentTimeMillis();
 
             // Define the offset to keep the ammo further from the tank
-            final float BULLET_OFFSET = 10.0f;
+            final float BULLET_OFFSET = 20.0f;
             // Calculate the offset for the x and y coordinates based on the angle
             float bulletX = x + ((float) img.getWidth() / 2 - BULLET_OFFSET / 2) + (float) (Math.cos(Math.toRadians(angle)) * ((img.getWidth() / 2) + BULLET_OFFSET));
             float bulletY = y + ((float) img.getHeight() / 2 - BULLET_OFFSET / 2) + (float) (Math.sin(Math.toRadians(angle)) * ((img.getWidth() / 2) + BULLET_OFFSET));
-            this.ammo.add(new Bullet(bulletX, bulletY, ResourceManager.getSprite("bullet"), angle,6));
+            Bullet bullet = new Bullet(bulletX, bulletY, ResourceManager.getSprite("bullet"), angle, 6);
+            this.ammo.add(bullet);
+            gameWorld.gobjs.add(bullet);
         }
-//        this.ammo.forEach(Bullet::update);
-//        for (Bullet bullet : this.ammo) {
-//            if (bullet.isActive()) {
-//                bullet.update();
-//                bullet.drawImage(g);
-//            }
-//        }
+
         this.hitBox.setLocation((int) x, (int) y);
 
         if ((this.lastSpeedIncreaseTime + SPEED_INCREASE_DURATION) < System.currentTimeMillis()) {
@@ -223,11 +236,10 @@ public class Tank extends GameObject {
                 System.out.println("Reset speed = " + SPEED + " at " + System.currentTimeMillis() + "ms");
             }
         }
-
-//        if ((System.currentTimeMillis() - this.lastSpeedIncreaseTime) > speedBoostDuration && SPEED > MIN_SPEED) {
-//            SPEED = MIN_SPEED;
-//            System.out.println("Reset speed = " + SPEED + " at " + System.currentTimeMillis() + "ms");
-//        }
+        if (isDead) {
+            respawn(); // call a respawn method to handle respawning
+            System.out.println("Tank is dead");
+        }
     }
 
     private void rotateLeft() {
@@ -282,10 +294,8 @@ public class Tank extends GameObject {
         g2d.setColor(Color.RED);
 //        this.ammo.forEach(bullet -> bullet.drawImage(g2d));
         for (Bullet bullet : this.ammo) {
-            if (bullet.isActive()) {
-                bullet.update();
-                bullet.drawImage(g2d);
-            }
+            bullet.update();
+            bullet.drawImage(g2d);
         }
         drawReloadBar(g2d);
         drawHealthBar(g2d);

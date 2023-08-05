@@ -19,7 +19,12 @@ import java.util.Objects;
 public class GameWorld extends JPanel implements Runnable {
 
     private final Launcher lf;
-    List<GameObject> gobjs = new ArrayList<>(1000);
+
+    public List<GameObject> getGobjs() {
+        return gobjs;
+    }
+    protected List<GameObject> gobjs = new ArrayList<>(1000);
+
     private BufferedImage world;
     private Tank t1;
     private Tank t2;
@@ -34,6 +39,15 @@ public class GameWorld extends JPanel implements Runnable {
         this.lf = lf;
     }
 
+    /**
+     * Reset game to its initial state.
+     */
+    public void resetGame() {
+        this.tick = 0;
+        this.t1.setX(300);
+        this.t1.setY(300);
+    }
+
     @Override
     public void run() {
         try {
@@ -44,7 +58,12 @@ public class GameWorld extends JPanel implements Runnable {
                 this.t2.update(); // update tank
                 this.bot1.update(t1); // update AI tank1 to follow t1
                 this.bot2.update(t2); // update AI tank2 to follow t2
+//                this.gobjs.addAll(bot1.ammo);
+//                this.gobjs.addAll(bot2.ammo);
+//                this.gobjs.addAll(t1.ammo);
+//                this.gobjs.addAll(t2.ammo);
                 this.checkCollision();
+//                this.gobjs.removeIf(gameObject -> !gameObject.isActive());
                 this.repaint();   // redraw game
                 /*
                  * Sleep for 1000/144 ms (~6.9ms). This is done to have our
@@ -57,34 +76,6 @@ public class GameWorld extends JPanel implements Runnable {
         }
     }
 
-    private void checkCollision() {
-        for (int i = 0; i < this.gobjs.size(); i++) {
-            GameObject obj1 = this.gobjs.get(i);
-            if (obj1 instanceof Wall || obj1 instanceof Health || obj1 instanceof Speed || obj1 instanceof Shield) {
-                continue;
-            }
-            for (int j = 0; j < this.gobjs.size(); j++) {
-                if (i == j) continue;
-                GameObject obj2 = this.gobjs.get(j);
-//                if (obj2 instanceof Tank) continue;
-                if (obj1.getHitBox().intersects(obj2.getHitBox())) {
-                    System.out.println(obj1 + " HAS HIT " + obj2);
-                    obj1.collides(obj2);
-                    this.gobjs.removeIf(gameObject -> !gameObject.isActive());
-                }
-            }
-        }
-    }
-
-    /**
-     * Reset game to its initial state.
-     */
-    public void resetGame() {
-        this.tick = 0;
-        this.t1.setX(300);
-        this.t1.setY(300);
-    }
-
     /**
      * Load all resources for Tank Wars Game. Set all Game Objects to their
      * initial state as well.
@@ -93,14 +84,14 @@ public class GameWorld extends JPanel implements Runnable {
         this.world = new BufferedImage(GameConstants.GAME_WORLD_WIDTH,
                 GameConstants.GAME_WORLD_HEIGHT,
                 BufferedImage.TYPE_INT_RGB);
-/**
- * 0 --> Nothing
- * 9--> unbreakables BUT non-collidable
- * 3--> unbreakables
- * 2--> breakables
- * 4--> health
- * 5-->speed
- * 6-->shield
+/*
+  0 --> Nothing
+  9--> unbreakables BUT non-collidable
+  3--> unbreakables
+  2--> breakables
+  4--> health
+  5-->speed
+  6-->shield
  */
         InputStreamReader isr = new InputStreamReader(Objects.requireNonNull(ResourceManager.class.getClassLoader().getResourceAsStream("maps/map1.csv")));
         try (BufferedReader mapReader = new BufferedReader(isr)) {
@@ -111,7 +102,7 @@ public class GameWorld extends JPanel implements Runnable {
                 for (int col = 0; col < gameItems.length; col++) {
                     String gameObject = gameItems[col];
                     if ("0".equals(gameObject)) continue;
-                    this.gobjs.add(GameObject.newInstance(gameObject, col * 30, row * 30));
+                    this.gobjs.add(GameObject.newInstance(gameObject, col * 30, row * 30,this));
                 }
                 row++;
             }
@@ -120,19 +111,38 @@ public class GameWorld extends JPanel implements Runnable {
             System.exit(-2);
         }
 
-        t1 = (Tank) GameObject.newInstance("11", 100, 100);
+        t1 = (Tank) GameObject.newInstance("11", 100, 100,this);
         TankControl tc1 = new TankControl(t1, KeyEvent.VK_W, KeyEvent.VK_S, KeyEvent.VK_A, KeyEvent.VK_D, KeyEvent.VK_SPACE);
         this.lf.getJf().addKeyListener(tc1);
-        t2 = (Tank) GameObject.newInstance("22", GameConstants.GAME_WORLD_WIDTH - 100, GameConstants.GAME_WORLD_HEIGHT - 100);
+        t2 = (Tank) GameObject.newInstance("22", GameConstants.GAME_WORLD_WIDTH - 100, GameConstants.GAME_WORLD_HEIGHT - 100,this);
         TankControl tc2 = new TankControl(t2, KeyEvent.VK_UP, KeyEvent.VK_DOWN, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, KeyEvent.VK_NUMPAD0);
         this.lf.getJf().addKeyListener(tc2);
-        bot1 = (BotAI) GameObject.newInstance("33", 100, GameConstants.GAME_WORLD_HEIGHT - 100);
-        bot2 = (BotAI) GameObject.newInstance("44", GameConstants.GAME_WORLD_WIDTH - 100, 100);
+        bot1 = (BotAI) GameObject.newInstance("33", 100, GameConstants.GAME_WORLD_HEIGHT - 100,this);
+        bot2 = (BotAI) GameObject.newInstance("44", GameConstants.GAME_WORLD_WIDTH - 100, 100,this);
 
         this.gobjs.add(bot1);
         this.gobjs.add(bot2);
         this.gobjs.add(t1);
         this.gobjs.add(t2);
+    }
+
+    private void checkCollision() {
+        for (int i = 0; i < this.gobjs.size(); i++) {
+            GameObject obj1 = this.gobjs.get(i);
+            if (obj1 instanceof Wall || obj1 instanceof Health || obj1 instanceof Speed || obj1 instanceof LivesUp) {
+                continue;
+            }
+            for (int j = 0; j < this.gobjs.size(); j++) {
+                if (i == j) continue;
+                GameObject obj2 = this.gobjs.get(j);
+                if (obj1.getClass() == obj2.getClass()) continue;
+                if (obj1.getHitBox().intersects(obj2.getHitBox())) {
+                    System.out.println(obj1 + " HAS HIT " + obj2);
+                    obj1.collides(obj2);
+                    this.gobjs.removeIf(gameObject -> !gameObject.isActive());
+                }
+            }
+        }
     }
 
     //    private void drawFloor(Graphics2D buffer) {
@@ -185,7 +195,6 @@ public class GameWorld extends JPanel implements Runnable {
         buffer.setColor(Color.BLACK);
         buffer.fillRect(0, 0, GameConstants.GAME_SCREEN_WIDTH, GameConstants.GAME_SCREEN_HEIGHT);
         this.drawFloor(buffer);
-//        this.gobjs.forEach(gameObject -> gameObject.drawImage(buffer));
         for (GameObject gameObject : this.gobjs) {
             if (gameObject.isActive()) {
                 gameObject.drawImage(buffer);

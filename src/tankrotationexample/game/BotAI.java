@@ -19,8 +19,9 @@ public class BotAI extends Tank {
     private float vx;
     private float vy;
     private float angle;
+    private GameWorld gameWorld;
 
-    BotAI(float x, float y, float vx, float vy, float angle, BufferedImage img) {
+    BotAI(float x, float y, float vx, float vy, float angle, BufferedImage img, GameWorld gameWorld) {
         this.x = x;
         this.y = y;
         this.vx = vx;
@@ -28,6 +29,7 @@ public class BotAI extends Tank {
         this.img = img;
         this.angle = angle;
         this.hitBox = new Rectangle((int) x, (int) y, this.img.getWidth(), this.img.getHeight());
+        this.gameWorld = gameWorld;
     }
 
     public Rectangle getHitBox() {
@@ -160,7 +162,9 @@ public class BotAI extends Tank {
             // Calculate the offset for the x and y coordinates based on the angle
             float bulletX = x + ((float) img.getWidth() / 2 - BULLET_OFFSET / 2) + (float) (Math.cos(Math.toRadians(angle)) * ((img.getWidth() / 2) + BULLET_OFFSET));
             float bulletY = y + ((float) img.getHeight() / 2 - BULLET_OFFSET / 2) + (float) (Math.sin(Math.toRadians(angle)) * ((img.getWidth() / 2) + BULLET_OFFSET));
-            this.ammo.add(new Bullet(bulletX, bulletY, ResourceManager.getSprite("bullet"), angle, 2));
+            Bullet bullet = new Bullet(bulletX, bulletY, ResourceManager.getSprite("bullet"), angle, 6);
+            this.ammo.add(bullet);
+            gameWorld.gobjs.add(bullet);
         }
     }
 

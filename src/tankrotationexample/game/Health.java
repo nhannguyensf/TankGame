@@ -4,22 +4,21 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public class Health extends GameObject implements PowerUp {
-    public static int getHealthBoost() {
-        return healthBoost;
-    }
-
     private static final int healthBoost = 20;
     float x, y;
     BufferedImage img;
     private Rectangle hitBox;
     private boolean isActive;
-
     public Health(float x, float y, BufferedImage img) {
         this.x = x;
         this.y = y;
         this.img = img;
         this.hitBox = new Rectangle((int) x, (int) y, this.img.getWidth(), this.img.getHeight());
         this.isActive = true;
+    }
+
+    public static int getHealthBoost() {
+        return healthBoost;
     }
 
     public Rectangle getHitBox() {
