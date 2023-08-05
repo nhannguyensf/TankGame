@@ -42,8 +42,8 @@ public class GameWorld extends JPanel implements Runnable {
                 this.tick++;
                 this.t1.update(); // update tank
                 this.t2.update(); // update tank
-                this.bot1.moveAI(t1.getX(), t1.getY()); // update AI tank1 to follow t1
-                this.bot2.moveAI(t2.getX(), t2.getY()); // update AI tank2 to follow t2
+                this.bot1.update(t1); // update AI tank1 to follow t1
+                this.bot2.update(t2); // update AI tank2 to follow t2
                 this.checkCollision();
                 this.repaint();   // redraw game
                 /*
@@ -66,7 +66,7 @@ public class GameWorld extends JPanel implements Runnable {
             for (int j = 0; j < this.gobjs.size(); j++) {
                 if (i == j) continue;
                 GameObject obj2 = this.gobjs.get(j);
-                if (obj2 instanceof Tank) continue;
+//                if (obj2 instanceof Tank) continue;
                 if (obj1.getHitBox().intersects(obj2.getHitBox())) {
                     System.out.println(obj1 + " HAS HIT " + obj2);
                     obj1.collides(obj2);

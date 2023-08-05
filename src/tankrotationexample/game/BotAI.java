@@ -1,36 +1,24 @@
 package tankrotationexample.game;
 
 import tankrotationexample.GameConstants;
+import tankrotationexample.Resources.ResourceManager;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 
-public class BotAI extends GameObject {
-    //    private static final int MAX_HEALTH = 100;
-//    private static final float MIN_SPEED = 2;
-//    private static final float MAX_SPEED = MIN_SPEED + Speed.getSpeedBoost();
-//    private static final long SPEED_INCREASE_DURATION = 3000;
+public class BotAI extends Tank {
     private static final float SPEED = .6f;
-    //    private final long reloadAmmo = 3000;
-    private final float ROTATIONSPEED = 1.0f;
+    private final float ROTATIONSPEED = 2.0f;
+    private final long reloadAmmo = 3000;
     private final Rectangle hitBox;
     private final BufferedImage img;
-    //    List<Bullet> ammo = new ArrayList<>();
-//    int health = MAX_HEALTH;
-//    private long speedBoostDuration = 1500; // 10 seconds in milliseconds
-//    private long lastSpeedIncreaseTime = 0L;
-//    private long timeSinceLastShot = 0L;
+    private long timeSinceLastShot = 0L;
     private float x;
     private float y;
     private float vx;
     private float vy;
     private float angle;
-//    private boolean UpPressed;
-//    private boolean DownPressed;
-//    private boolean RightPressed;
-//    private boolean LeftPressed;
-//    private boolean shootPressed;
 
     BotAI(float x, float y, float vx, float vy, float angle, BufferedImage img) {
         this.x = x;
@@ -44,11 +32,6 @@ public class BotAI extends GameObject {
 
     public Rectangle getHitBox() {
         return this.hitBox.getBounds();
-    }
-
-    @Override
-    public boolean isActive() {
-        return true;
     }
 
     public float getX() {
@@ -69,10 +52,15 @@ public class BotAI extends GameObject {
 
     @Override
     public void collides(GameObject with) {
-        if (with instanceof Wall || with instanceof BreakableWall) {
-            //stop
-            handleAllWallCollision(with);
-            System.out.println("Tank is hitting a type of wall");
+//        if (with instanceof Wall || with instanceof BreakableWall) {
+//            //stop
+//            handleAllWallCollision(with);
+//            System.out.println("TankAI is hitting a type of wall");
+//        } else
+        if (with instanceof Tank) {
+            // Handle collision with player's tank
+            System.out.println("TankAI is hitting a player's tank");
+//            handleTankAICollision((Tank) with);
         }
     }
 
@@ -116,14 +104,6 @@ public class BotAI extends GameObject {
         this.angle += this.ROTATIONSPEED;
     }
 
-    private void moveBackwards() {
-        vx = Math.round(SPEED * Math.cos(Math.toRadians(angle)));
-        vy = Math.round(SPEED * Math.sin(Math.toRadians(angle)));
-        x -= vx;
-        y -= vy;
-        checkBorder();
-    }
-
     private void moveForwards() {
         vx = Math.round(SPEED * Math.cos(Math.toRadians(angle)));
         vy = Math.round(SPEED * Math.sin(Math.toRadians(angle)));
@@ -147,20 +127,40 @@ public class BotAI extends GameObject {
         }
     }
 
-    void update() {
+    void update(Tank tank) {
+        attackPlayer(tank);
         this.hitBox.setLocation((int) x, (int) y);
     }
 
-    public void moveAI(float targetX, float targetY) {
-        float deltaX = targetX - x;
-        float deltaY = targetY - y;
+    public void attackPlayer(Tank playerTank) {
+        float deltaX = playerTank.getX() - x;
+        float deltaY = playerTank.getY() - y;
+        pursuitPlayer(deltaX, deltaY);
+        shootPlayer(deltaX, deltaY);
+    }
+
+    private void pursuitPlayer(float deltaX, float deltaY) {
         float targetAngle = (float) Math.toDegrees(Math.atan2(deltaY, deltaX));
 
         if (Math.abs(targetAngle - angle) > ROTATIONSPEED) {
-            if (angle < targetAngle) rotateRight();
-            else rotateLeft();
+            if (angle < targetAngle) this.rotateRight();
+            else this.rotateLeft();
         } else {
-            moveForwards();
+            this.moveForwards();
+        }
+    }
+
+    private void shootPlayer(float deltaX, float deltaY) {
+        float distanceToPlayer = (float) Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+        if ((distanceToPlayer < 200) && ((this.timeSinceLastShot + this.reloadAmmo) < System.currentTimeMillis())) {
+            this.timeSinceLastShot = System.currentTimeMillis();
+
+            // Define the offset to keep the ammo further from the tank
+            final float BULLET_OFFSET = 10.0f;
+            // Calculate the offset for the x and y coordinates based on the angle
+            float bulletX = x + ((float) img.getWidth() / 2 - BULLET_OFFSET / 2) + (float) (Math.cos(Math.toRadians(angle)) * ((img.getWidth() / 2) + BULLET_OFFSET));
+            float bulletY = y + ((float) img.getHeight() / 2 - BULLET_OFFSET / 2) + (float) (Math.sin(Math.toRadians(angle)) * ((img.getWidth() / 2) + BULLET_OFFSET));
+            this.ammo.add(new Bullet(bulletX, bulletY, ResourceManager.getSprite("bullet"), angle, 2));
         }
     }
 
@@ -175,5 +175,25 @@ public class BotAI extends GameObject {
         Graphics2D g2d = (Graphics2D) g;
         g2d.drawImage(this.img, rotation, null);
         g2d.setColor(Color.RED);
+        for (Bullet bullet : this.ammo) {
+            if (bullet.isActive()) {
+                bullet.update();
+                bullet.drawImage(g2d);
+            }
+        }
+        drawReloadBar(g2d);
+    }
+
+    private void drawReloadBar(Graphics2D g2d) {
+        g2d.setColor(Color.YELLOW);
+        g2d.drawRect((int) x - 20, (int) y - 20, 100, 5);
+        long currentWidth = 100 - ((this.timeSinceLastShot + this.reloadAmmo) - System.currentTimeMillis()) / (this.reloadAmmo / 100);
+        if (currentWidth > 100) {
+            currentWidth = 100;
+        }
+        g2d.fillRect((int) x - 20, (int) y - 20, (int) currentWidth, 5);
+        if (currentWidth < 100) {
+            g2d.drawString("Reloading...", (int) x + 82, (int) y - 12);
+        }
     }
 }

@@ -14,18 +14,19 @@ public class Bullet extends GameObject {
     private float vx;
     private float vy;
     private float angle;
-    private float R = 6;
+    private float R;
     private BufferedImage img;
     private Rectangle hitBox;
 
 
-    Bullet(float x, float y, BufferedImage img, float angle) {
+    Bullet(float x, float y, BufferedImage img, float angle, float bulletSpeed) {
         this.x = x;
         this.y = y;
         this.vx = 0;
         this.vy = 0;
         this.img = img;
         this.angle = angle;
+        this.R = bulletSpeed;
         this.isActive = true;
         this.hitBox = new Rectangle((int) x, (int) y, this.img.getWidth(), this.img.getHeight());
     }

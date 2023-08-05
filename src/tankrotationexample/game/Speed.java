@@ -4,10 +4,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public class Speed extends GameObject implements PowerUp {
-    public static int getSpeedBoost() {
-        return speedBoost;
-    }
-
     private static final int speedBoost = 3;
     float x, y;
     BufferedImage img;
@@ -22,6 +18,10 @@ public class Speed extends GameObject implements PowerUp {
         this.isActive = true;
     }
 
+    public static int getSpeedBoost() {
+        return speedBoost;
+    }
+
     public Rectangle getHitBox() {
         return this.hitBox.getBounds();
     }
@@ -33,7 +33,6 @@ public class Speed extends GameObject implements PowerUp {
         System.out.println("Tank is speeding up");
     }
 
-    @Override
     public void onHit() {
         this.isActive = false;
     }

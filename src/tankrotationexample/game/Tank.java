@@ -17,11 +17,10 @@ public class Tank extends GameObject {
     private static float SPEED = MIN_SPEED;
     private final long reloadAmmo = 3000;
     private final float ROTATIONSPEED = 2.0f;
-    private final Rectangle hitBox;
-    private final BufferedImage img;
     List<Bullet> ammo = new ArrayList<>();
     int health = MAX_HEALTH;
-    private long speedBoostDuration = 1500; // 10 seconds in milliseconds
+    private Rectangle hitBox;
+    private BufferedImage img = null;
     private long lastSpeedIncreaseTime = 0L;
     private long timeSinceLastShot = 0L;
     private float x;
@@ -34,15 +33,20 @@ public class Tank extends GameObject {
     private boolean RightPressed;
     private boolean LeftPressed;
     private boolean shootPressed;
+    private boolean wasHit;
 
-    Tank(float x, float y, float vx, float vy, float angle, BufferedImage img) {
+    public Tank(float x, float y, float vx, float vy, float angle, BufferedImage img) {
         this.x = x;
         this.y = y;
         this.vx = vx;
         this.vy = vy;
         this.img = img;
         this.angle = angle;
+        hitBox = null;
         this.hitBox = new Rectangle((int) x, (int) y, this.img.getWidth(), this.img.getHeight());
+    }
+
+    public Tank() {
     }
 
     public Rectangle getHitBox() {
@@ -201,7 +205,7 @@ public class Tank extends GameObject {
             // Calculate the offset for the x and y coordinates based on the angle
             float bulletX = x + ((float) img.getWidth() / 2 - BULLET_OFFSET / 2) + (float) (Math.cos(Math.toRadians(angle)) * ((img.getWidth() / 2) + BULLET_OFFSET));
             float bulletY = y + ((float) img.getHeight() / 2 - BULLET_OFFSET / 2) + (float) (Math.sin(Math.toRadians(angle)) * ((img.getWidth() / 2) + BULLET_OFFSET));
-            this.ammo.add(new Bullet(bulletX, bulletY, ResourceManager.getSprite("bullet"), angle));
+            this.ammo.add(new Bullet(bulletX, bulletY, ResourceManager.getSprite("bullet"), angle,6));
         }
 //        this.ammo.forEach(Bullet::update);
 //        for (Bullet bullet : this.ammo) {
@@ -212,7 +216,7 @@ public class Tank extends GameObject {
 //        }
         this.hitBox.setLocation((int) x, (int) y);
 
-        if ((this.lastSpeedIncreaseTime + this.SPEED_INCREASE_DURATION) < System.currentTimeMillis()) {
+        if ((this.lastSpeedIncreaseTime + SPEED_INCREASE_DURATION) < System.currentTimeMillis()) {
             this.lastSpeedIncreaseTime = System.currentTimeMillis();
             if ((SPEED > MIN_SPEED)) {
                 SPEED = MIN_SPEED;
@@ -224,19 +228,6 @@ public class Tank extends GameObject {
 //            SPEED = MIN_SPEED;
 //            System.out.println("Reset speed = " + SPEED + " at " + System.currentTimeMillis() + "ms");
 //        }
-    }
-
-    public void moveAI(float targetX, float targetY) {
-        float deltaX = targetX - x;
-        float deltaY = targetY - y;
-        float targetAngle = (float) Math.toDegrees(Math.atan2(deltaY, deltaX));
-
-        if (Math.abs(targetAngle - angle) > ROTATIONSPEED) {
-            if (angle < targetAngle) rotateRight();
-            else rotateLeft();
-        } else {
-            moveForwards();
-        }
     }
 
     private void rotateLeft() {

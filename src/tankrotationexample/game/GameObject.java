@@ -27,4 +27,5 @@ public abstract class GameObject {
     public abstract Rectangle getHitBox();
 
     public abstract boolean isActive();
+//    public abstract void onHit();
 }

@@ -47,7 +47,6 @@ public class Health extends GameObject implements PowerUp {
         System.out.println("Tank is healing");
     }
 
-    @Override
     public void onHit() {
         this.isActive = false;
     }

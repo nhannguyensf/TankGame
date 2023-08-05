@@ -26,7 +26,6 @@ public class Shield extends GameObject implements PowerUp {
 
     }
 
-    @Override
     public void onHit() {
         this.isActive = false;
     }
