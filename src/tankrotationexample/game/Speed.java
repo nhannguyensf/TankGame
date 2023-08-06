@@ -29,12 +29,8 @@ public class Speed extends GameObject implements PowerUp {
     @Override
     public void applyPowerUp(Tank tank) {
         tank.increaseSpeed();
-        onHit();
-        System.out.println("Tank is speeding up");
-    }
-
-    public void onHit() {
         this.isActive = false;
+        System.out.println("Tank is speeding up");
     }
 
     @Override

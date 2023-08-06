@@ -9,6 +9,7 @@ public class Health extends GameObject implements PowerUp {
     BufferedImage img;
     private Rectangle hitBox;
     private boolean isActive;
+
     public Health(float x, float y, BufferedImage img) {
         this.x = x;
         this.y = y;
@@ -41,12 +42,8 @@ public class Health extends GameObject implements PowerUp {
 
     @Override
     public void applyPowerUp(Tank tank) {
-        tank.increaseHealth();
-        onHit();
         System.out.println("Tank is healing");
-    }
-
-    public void onHit() {
+        tank.increaseHealth();
         this.isActive = false;
     }
 

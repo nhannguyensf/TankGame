@@ -154,7 +154,7 @@ public class BotAI extends Tank {
 
     private void shootPlayer(float deltaX, float deltaY) {
         float distanceToPlayer = (float) Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-        if ((distanceToPlayer < 200) && ((this.timeSinceLastShot + this.reloadAmmo) < System.currentTimeMillis())) {
+        if ((distanceToPlayer < 300) && ((this.timeSinceLastShot + this.reloadAmmo) < System.currentTimeMillis())) {
             this.timeSinceLastShot = System.currentTimeMillis();
 
             // Define the offset to keep the ammo further from the tank
@@ -164,7 +164,7 @@ public class BotAI extends Tank {
             float bulletY = y + ((float) img.getHeight() / 2 - BULLET_OFFSET / 2) + (float) (Math.sin(Math.toRadians(angle)) * ((img.getWidth() / 2) + BULLET_OFFSET));
             Bullet bullet = new Bullet(bulletX, bulletY, ResourceManager.getSprite("bullet"), angle, 6);
             this.ammo.add(bullet);
-            gameWorld.gobjs.add(bullet);
+            gameWorld.addGameObject(bullet);
         }
     }
 

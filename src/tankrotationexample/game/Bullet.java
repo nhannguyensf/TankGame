@@ -55,7 +55,7 @@ public class Bullet extends GameObject {
             vy = Math.round(R * Math.sin(Math.toRadians(angle)));
             x += vx;
             y += vy;
-            checkBorder();
+//            checkBorder();
             this.hitBox.setLocation((int) x, (int) y);
         }
     }
@@ -97,19 +97,13 @@ public class Bullet extends GameObject {
         }
     }
 
-    private void handleTankCollision(Tank with) {
+    private void handleTankCollision(Tank playerTank) {
         this.isActive = false;
-        with.health -= this.bulletDamage;
-
-        if (with.health <= 0) {
-            with.health = 0;
-            with.live -= 1;
-            System.out.println("~~~Tank died~~~");
-            if (with.live <= 0) {
-                with.isDead = true;
-            }
+        playerTank.health -= this.bulletDamage;
+        System.out.println("Tank health: " + playerTank.health);
+        if (playerTank.health <= 0) {
+            playerTank.isDead = true;
         }
-        System.out.println("Tank health: " + with.health);
     }
 
     private void handleBreakableWallCollision(BreakableWall with) {
@@ -132,9 +126,5 @@ public class Bullet extends GameObject {
 
     public int getDamage() {
         return this.bulletDamage;
-    }
-
-    public void onHit() {
-        this.isActive = false;
     }
 }

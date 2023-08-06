@@ -12,7 +12,7 @@ public class Animation {
     private int currentFrame = 0;
     private boolean isRunning = false;
 
-    public Animation(float x, float y, List<BufferedImage> frames, boolean isRunning) {
+    public Animation(float x, float y, List<BufferedImage> frames) {
         this.x = x;
         this.y = y;
         this.frames = frames;
@@ -23,10 +23,10 @@ public class Animation {
         if (timeSinceUpdate + delay < System.currentTimeMillis()) {
             this.timeSinceUpdate = System.currentTimeMillis();
             this.currentFrame++;
-            this.currentFrame = (currentFrame + 1) % this.frames.size();
-//            if (this.currentFrame == this.frames.size()) {
-//                isRunning = false;
-//            }
+//            this.currentFrame = (currentFrame + 1) % this.frames.size();
+            if (this.currentFrame == this.frames.size()) {
+                isRunning = false;
+            }
         }
     }
 

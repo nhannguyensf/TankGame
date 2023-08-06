@@ -16,6 +16,7 @@ public abstract class GameObject {
             case "22" -> new Tank(x, y, 0, 0, (short) 180, ResourceManager.getSprite("tank2"), gameWorld);
             case "33" -> new BotAI(x, y, 0, 0, (short) 0, ResourceManager.getSprite("tankAI"), gameWorld);
             case "44" -> new BotAI(x, y, 0, 0, (short) 180, ResourceManager.getSprite("tankAI"), gameWorld);
+            case "00" -> new Bullet(x, y, ResourceManager.getSprite("bullet"), 0, (short) 180);
             default -> throw new IllegalArgumentException("%s type not supported".formatted(type));
         };
     }
@@ -27,5 +28,4 @@ public abstract class GameObject {
     public abstract Rectangle getHitBox();
 
     public abstract boolean isActive();
-//    public abstract void onHit();
 }

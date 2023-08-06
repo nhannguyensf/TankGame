@@ -9,9 +9,6 @@ public class LivesUp extends GameObject implements PowerUp {
     BufferedImage img;
     private Rectangle hitBox;
     private boolean isActive;
-    public static int getLivesBoost() {
-        return lives;
-    }
 
     public LivesUp(float x, float y, BufferedImage img) {
         this.x = x;
@@ -21,18 +18,18 @@ public class LivesUp extends GameObject implements PowerUp {
         this.isActive = true;
     }
 
+    public static int getLivesBoost() {
+        return lives;
+    }
+
     public Rectangle getHitBox() {
         return this.hitBox.getBounds();
     }
 
     @Override
     public void applyPowerUp(Tank tank) {
-        tank.increaseLife();
-        onHit();
         System.out.println("Tank has more life");
-    }
-
-    public void onHit() {
+        tank.increaseLife();
         this.isActive = false;
     }
 

@@ -15,8 +15,6 @@ public class Tank extends GameObject {
     private static final float MAX_SPEED = MIN_SPEED + Speed.getSpeedBoost();
     private static final long SPEED_INCREASE_DURATION = 3000;
     private static final int MAX_LIVE = 3;
-    private static float START_X;
-    private static float START_Y;
     private static float SPEED = MIN_SPEED;
     private final long reloadAmmo = 3000;
     private final float ROTATIONSPEED = 2.0f;
@@ -30,6 +28,7 @@ public class Tank extends GameObject {
     private long timeSinceLastShot = 0L;
     private float x;
     private float y;
+    private float starX = x, starY = y;
     private float vx;
     private float vy;
     private float angle;
@@ -48,8 +47,6 @@ public class Tank extends GameObject {
         this.vy = vy;
         this.img = img;
         this.angle = angle;
-        START_X = x;
-        START_Y = y;
         hitBox = null;
         this.hitBox = new Rectangle((int) x, (int) y, this.img.getWidth(), this.img.getHeight());
         this.gameWorld = gameWorld;
@@ -128,10 +125,10 @@ public class Tank extends GameObject {
 
     public void increaseHealth() {
         this.health += Health.getHealthBoost();
-        System.out.println("Health = " + this.health);
         if (this.health > MAX_HEALTH) {
             this.health = MAX_HEALTH;
         }
+        System.out.println("Health = " + this.health);
     }
 
     public void increaseSpeed() {
@@ -151,10 +148,10 @@ public class Tank extends GameObject {
     }
 
     private void respawn() {
-        this.isDead = false; // reset the isDead flag
-//        this.x = START_X;
-//        this.y = START_Y;
         this.health = MAX_HEALTH; // reset health
+        this.isDead = false; // reset the isDead flag
+        this.x = starX;
+        this.y = starY;
     }
 
     void toggleUpPressed() {
@@ -197,7 +194,7 @@ public class Tank extends GameObject {
         this.shootPressed = false;
     }
 
-    void update() {
+    void update(GameWorld gw) {
         if (this.UpPressed) {
             this.moveForwards();
         }
@@ -222,9 +219,10 @@ public class Tank extends GameObject {
             // Calculate the offset for the x and y coordinates based on the angle
             float bulletX = x + ((float) img.getWidth() / 2 - BULLET_OFFSET / 2) + (float) (Math.cos(Math.toRadians(angle)) * ((img.getWidth() / 2) + BULLET_OFFSET));
             float bulletY = y + ((float) img.getHeight() / 2 - BULLET_OFFSET / 2) + (float) (Math.sin(Math.toRadians(angle)) * ((img.getWidth() / 2) + BULLET_OFFSET));
-            Bullet bullet = new Bullet(bulletX, bulletY, ResourceManager.getSprite("bullet"), angle, 6);
+            var bullet = new Bullet(bulletX, bulletY, ResourceManager.getSprite("bullet"), angle, 6);
             this.ammo.add(bullet);
-            gameWorld.gobjs.add(bullet);
+            gameWorld.addGameObject(bullet);
+            gw.animations.add(new Animation(x, y, ResourceManager.getAnimation("bulletshoot")));
         }
 
         this.hitBox.setLocation((int) x, (int) y);
@@ -236,9 +234,14 @@ public class Tank extends GameObject {
                 System.out.println("Reset speed = " + SPEED + " at " + System.currentTimeMillis() + "ms");
             }
         }
-        if (isDead) {
+
+        if (this.isDead) {
+            this.live -= 1;
+            System.out.println("~~~Tank died: " + this.live + " lives left!~~~");
+            if (this.live <= 0) {
+                System.out.println("~~~Tank lose~~~");
+            }
             respawn(); // call a respawn method to handle respawning
-            System.out.println("Tank is dead");
         }
     }
 
@@ -294,8 +297,10 @@ public class Tank extends GameObject {
         g2d.setColor(Color.RED);
 //        this.ammo.forEach(bullet -> bullet.drawImage(g2d));
         for (Bullet bullet : this.ammo) {
-            bullet.update();
-            bullet.drawImage(g2d);
+            if (bullet.isActive()) {
+                bullet.update();
+                bullet.drawImage(g2d);
+            }
         }
         drawReloadBar(g2d);
         drawHealthBar(g2d);

@@ -5,10 +5,7 @@ import tankrotationexample.game.Sound;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public class ResourceManager {
     private final static Map<String, BufferedImage> sprites = new HashMap<>();
@@ -17,10 +14,10 @@ public class ResourceManager {
     private final static Map<String, Integer> animationInfo = new HashMap<>() {{
         put("bullethit", 24);
         put("bulletshoot", 24);
-        put("powerpick", 24);
-        put("puffsmoke", 24);
-        put("rocketflame", 24);
-        put("rockethit", 24);
+        put("powerpick", 32);
+        put("puffsmoke", 32);
+        put("rocketflame", 16);
+        put("rockethit", 32);
     }};
 
 
@@ -32,7 +29,8 @@ public class ResourceManager {
         try {
             ResourceManager.sprites.put("tank1", loadSprites("tank/tank1.png"));
             ResourceManager.sprites.put("tank2", loadSprites("tank/tank2.png"));
-            ResourceManager.sprites.put("tankAI", loadSprites("tank/tankAI.png"));
+            ResourceManager.sprites.put("tankAI", loadSprites("tank/jet5.png"));
+
 
             ResourceManager.sprites.put("bullet", loadSprites("bullet/bullet.jpg"));
             ResourceManager.sprites.put("rocket1", loadSprites("bullet/rocket1.png"));
@@ -55,17 +53,26 @@ public class ResourceManager {
         }
     }
 
-//    public static void initAnimations() {
-//        String baseName = "animations/%s/%s_%04d.png";
-//        animation.forEach((animationName, frameCount) -> {
-//            for (int i = 0; i < frameCount; i++) {
-//                String spritePath = baseName.formatted()
-//            });
-//        }
-//    }
+    public static void initAnimations() {
+        String baseName = "animations/%s/%s_%04d.png";
+        animationInfo.forEach((animationName, frameCount) -> {
+            List<BufferedImage> frames = new ArrayList<>();
+            try {
+                for (int i = 0; i < frameCount; i++) {
+                    String spritePath = baseName.formatted(animationName, animationName, i);
+                    frames.add(loadSprites(spritePath));
+                }
+                ResourceManager.animations.put(animationName, frames);
+            } catch (IOException e) {
+                System.out.println(e);
+                throw new RuntimeException(e);
+            }
+        });
+    }
 
     public static void loadResources() {
         ResourceManager.initSprites();
+        ResourceManager.initAnimations();
     }
 
     public static BufferedImage getSprite(String type) {
@@ -82,13 +89,15 @@ public class ResourceManager {
         return ResourceManager.sounds.get(type);
     }
 
-    public static Object getAnimation(String bullet) {
-        return null;
+    public static List<BufferedImage> getAnimation(String type) {
+        if (!ResourceManager.animations.containsKey(type)) {
+            throw new RuntimeException("%s is missing from animation resources".formatted(type));
+        }
+        return ResourceManager.animations.get(type);
     }
 
 //    public static void main(String[] args) {
-//        ResourcePool<Bullet> bPool = new ResourcePool<>("bullet", 300);
-//        bPool.fillPool(Bullet.class, 300);
 //        ResourceManager.loadResources();
+//        System.out.println();
 //    }
 }
