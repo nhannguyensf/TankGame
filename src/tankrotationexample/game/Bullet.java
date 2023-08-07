@@ -8,31 +8,37 @@ import java.awt.image.BufferedImage;
 
 public class Bullet extends GameObject {
     private int bulletDamage = 20;
-    private boolean active;
+    private boolean isActive;
     private float x;
     private float y;
     private float vx;
     private float vy;
     private float angle;
-    private float R = 6;
+    private float R;
     private BufferedImage img;
     private Rectangle hitBox;
 
 
-    Bullet(float x, float y, BufferedImage img, float angle) {
+    Bullet(float x, float y, BufferedImage img, float angle, float bulletSpeed) {
         this.x = x;
         this.y = y;
         this.vx = 0;
         this.vy = 0;
         this.img = img;
         this.angle = angle;
-        this.active = true;
+        this.R = bulletSpeed;
+        this.isActive = true;
         this.hitBox = new Rectangle((int) x, (int) y, this.img.getWidth(), this.img.getHeight());
     }
 
     public Rectangle getHitBox() {
         return this.hitBox.getBounds();
 
+    }
+
+    @Override
+    public boolean isActive() {
+        return this.isActive;
     }
 
     public float getX() {
@@ -44,12 +50,14 @@ public class Bullet extends GameObject {
     }
 
     void update() {
-        vx = Math.round(R * Math.cos(Math.toRadians(angle)));
-        vy = Math.round(R * Math.sin(Math.toRadians(angle)));
-        x += vx;
-        y += vy;
-        checkBorder();
-        this.hitBox.setLocation((int) x, (int) y);
+        if (this.isActive) {
+            vx = Math.round(R * Math.cos(Math.toRadians(angle)));
+            vy = Math.round(R * Math.sin(Math.toRadians(angle)));
+            x += vx;
+            y += vy;
+//            checkBorder();
+            this.hitBox.setLocation((int) x, (int) y);
+        }
     }
 
     private void checkBorder() {
@@ -69,7 +77,7 @@ public class Bullet extends GameObject {
 
     @Override
     public String toString() {
-        return "x=" + x + ", y=" + y + ", angle=" + angle;
+        return "A bullet";
     }
 
     @Override
@@ -89,22 +97,21 @@ public class Bullet extends GameObject {
         }
     }
 
-    private void handleTankCollision(Tank with) {
-        with.health -= this.bulletDamage;
-
-        if (with.health < 0) {
-            with.health = 0;
-            System.out.println("Tank health: " + with.health);
-            // Handle the situation when the tank's health drops to zero, such as destroying the tank
+    private void handleTankCollision(Tank playerTank) {
+        this.isActive = false;
+        playerTank.health -= this.bulletDamage;
+        System.out.println("Tank health: " + playerTank.health);
+        if (playerTank.health <= 0) {
+            playerTank.isDead = true;
         }
     }
 
     private void handleBreakableWallCollision(BreakableWall with) {
-        this.active = false;
+        this.isActive = false;
     }
 
     private void handleWallCollision() {
-        this.active = false;
+        this.isActive = false;
     }
 
     public void drawImage(Graphics g) {
@@ -112,14 +119,12 @@ public class Bullet extends GameObject {
         rotation.rotate(Math.toRadians(angle), this.img.getWidth() / 2.0, this.img.getHeight() / 2.0);
         rotation.scale(2, 2);
         Graphics2D g2d = (Graphics2D) g;
-        g2d.drawImage(this.img, rotation, null);
+        if (this.isActive) {
+            g2d.drawImage(this.img, rotation, null);
+        }
     }
 
     public int getDamage() {
         return this.bulletDamage;
-    }
-
-    public boolean isActive() {
-        return this.active;
     }
 }

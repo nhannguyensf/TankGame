@@ -10,47 +10,64 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Tank extends GameObject {
-
     private static final int MAX_HEALTH = 100;
+    private static final float MIN_SPEED = 2;
+    private static final float MAX_SPEED = MIN_SPEED + Speed.getSpeedBoost();
+    private static final long SPEED_INCREASE_DURATION = 3000;
+    private static final int MAX_LIVE = 3;
+    private static float SPEED = MIN_SPEED;
+    private final long reloadAmmo = 1000;
+    private final float ROTATIONSPEED = 2.0f;
+    public boolean isDead = false;
     List<Bullet> ammo = new ArrayList<>();
-    long timeSinceLastShot = 0L;
-    long reloadAmmo = 3000;
     int health = MAX_HEALTH;
-
+    int live = MAX_LIVE;
+    private Rectangle hitBox;
+    private BufferedImage img = null;
+    private long lastSpeedIncreaseTime = 0L;
+    private long timeSinceLastShot = 0L;
     private float x;
     private float y;
+    private float starX = x, starY = y;
     private float vx;
     private float vy;
     private float angle;
-    private float R = 2;
-    private float ROTATIONSPEED = 2.0f;
-    private BufferedImage img;
     private boolean UpPressed;
     private boolean DownPressed;
     private boolean RightPressed;
     private boolean LeftPressed;
     private boolean shootPressed;
-    private Rectangle hitBox;
+    private GameWorld gameWorld;
 
-    Tank(float x, float y, float vx, float vy, float angle, BufferedImage img) {
+    public Tank(float x, float y, float vx, float vy, float angle, BufferedImage img, GameWorld gameWorld) {
         this.x = x;
         this.y = y;
         this.vx = vx;
         this.vy = vy;
         this.img = img;
         this.angle = angle;
+        hitBox = null;
         this.hitBox = new Rectangle((int) x, (int) y, this.img.getWidth(), this.img.getHeight());
+        this.gameWorld = gameWorld;
     }
 
-    // A helper function to clamp a value between a minimum and maximum
-    static float clamp(float value, float min, float max) {
-        return Math.max(min, Math.min(max, value));
+
+    public Tank() {
     }
-  
+
+    public int getLive() {
+        return this.live;
+    }
+
     public Rectangle getHitBox() {
         return this.hitBox.getBounds();
     }
-  
+
+    @Override
+    public boolean isActive() {
+        return true;
+    }
+
     public float getX() {
         return this.x;
     }
@@ -110,6 +127,37 @@ public class Tank extends GameObject {
         this.hitBox.setLocation((int) x, (int) y);
     }
 
+    public void increaseHealth() {
+        this.health += Health.getHealthBoost();
+        if (this.health > MAX_HEALTH) {
+            this.health = MAX_HEALTH;
+        }
+        System.out.println("Health = " + this.health);
+    }
+
+    public void increaseSpeed() {
+        if (SPEED < MAX_SPEED && (this.lastSpeedIncreaseTime + lastSpeedIncreaseTime) > System.currentTimeMillis()) {
+            SPEED = MAX_SPEED;
+            this.lastSpeedIncreaseTime = System.currentTimeMillis();
+            System.out.println("Speed = " + SPEED + " at " + System.currentTimeMillis() + "ms");
+        }
+    }
+
+    public void increaseLife() {
+        this.live += LivesUp.getLivesBoost();
+        if (this.live >= MAX_LIVE) {
+            this.live = MAX_LIVE;
+        }
+        System.out.println("Tank lives = " + this.live);
+    }
+
+    private void respawn() {
+        this.health = MAX_HEALTH; // reset health
+        this.isDead = false; // reset the isDead flag
+//        this.x = starX;
+//        this.y = starY;
+    }
+
     void toggleUpPressed() {
         this.UpPressed = true;
     }
@@ -150,7 +198,7 @@ public class Tank extends GameObject {
         this.shootPressed = false;
     }
 
-    void update() {
+    void update(GameWorld gw) {
         if (this.UpPressed) {
             this.moveForwards();
         }
@@ -166,25 +214,44 @@ public class Tank extends GameObject {
         if (this.RightPressed) {
             this.rotateRight();
         }
-      
+
         if (this.shootPressed && ((this.timeSinceLastShot + this.reloadAmmo) < System.currentTimeMillis())) {
             this.timeSinceLastShot = System.currentTimeMillis();
 
             // Define the offset to keep the ammo further from the tank
-            final float BULLET_OFFSET = 10.0f;
+//            final float BULLET_OFFSET = 20.0f;
+            final float BULLET_OFFSET = this.img.getWidth();
+            ;
             // Calculate the offset for the x and y coordinates based on the angle
-            float bulletX = x + ((float) img.getWidth() / 2 - BULLET_OFFSET / 2) + (float) (Math.cos(Math.toRadians(angle)) * ((img.getWidth() / 2) + BULLET_OFFSET));
-            float bulletY = y + ((float) img.getHeight() / 2 - BULLET_OFFSET / 2) + (float) (Math.sin(Math.toRadians(angle)) * ((img.getWidth() / 2) + BULLET_OFFSET));
-            this.ammo.add(new Bullet(bulletX, bulletY, ResourceManager.getSprite("bullet"), angle));
+//            float bulletX = this.x + ((float) img.getWidth() / 2 - BULLET_OFFSET / 2) + (float) (Math.cos(Math.toRadians(angle)) * ((img.getWidth() / 2) + BULLET_OFFSET));
+//            float bulletY = this.y + ((float) img.getHeight() / 2 - BULLET_OFFSET / 2) + (float) (Math.sin(Math.toRadians(angle)) * ((img.getWidth() / 2) + BULLET_OFFSET));
+            float bulletX = this.x + ((float) this.img.getWidth() / 2) + (float) (Math.cos(Math.toRadians(this.angle)) * BULLET_OFFSET);
+            float bulletY = this.y + ((float) this.img.getHeight() / 2) + (float) (Math.sin(Math.toRadians(this.angle)) * BULLET_OFFSET);
+
+            var bullet = new Bullet(bulletX, bulletY, ResourceManager.getSprite("bullet"), angle, 6);
+            this.ammo.add(bullet);
+            this.gameWorld.addGameObject(bullet);
+            gw.animations.add(new Animation(x, y, ResourceManager.getAnimation("bulletshoot")));
         }
-//        this.ammo.forEach(Bullet::update);
-        for (Bullet bullet : this.ammo) {
-            if (bullet.isActive()) {
-                bullet.update();
-//                bullet.drawImage(g);
+
+        this.hitBox.setLocation((int) x, (int) y);
+
+        if ((this.lastSpeedIncreaseTime + SPEED_INCREASE_DURATION) < System.currentTimeMillis()) {
+            this.lastSpeedIncreaseTime = System.currentTimeMillis();
+            if ((SPEED > MIN_SPEED)) {
+                SPEED = MIN_SPEED;
+                System.out.println("Reset speed = " + SPEED + " at " + System.currentTimeMillis() + "ms");
             }
         }
-        this.hitBox.setLocation((int) x, (int) y);
+
+        if (this.isDead) {
+            this.live -= 1;
+            System.out.println("~~~Tank died: " + this.live + " lives left!~~~");
+            if (this.live <= 0) {
+                System.out.println("~~~Tank lose~~~");
+            }
+            respawn(); // call a respawn method to handle respawning
+        }
     }
 
     private void rotateLeft() {
@@ -196,16 +263,16 @@ public class Tank extends GameObject {
     }
 
     private void moveBackwards() {
-        vx = Math.round(R * Math.cos(Math.toRadians(angle)));
-        vy = Math.round(R * Math.sin(Math.toRadians(angle)));
+        vx = Math.round(SPEED * Math.cos(Math.toRadians(angle)));
+        vy = Math.round(SPEED * Math.sin(Math.toRadians(angle)));
         x -= vx;
         y -= vy;
         checkBorder();
     }
 
     private void moveForwards() {
-        vx = Math.round(R * Math.cos(Math.toRadians(angle)));
-        vy = Math.round(R * Math.sin(Math.toRadians(angle)));
+        vx = Math.round(SPEED * Math.cos(Math.toRadians(angle)));
+        vy = Math.round(SPEED * Math.sin(Math.toRadians(angle)));
         x += vx;
         y += vy;
         checkBorder();
@@ -240,12 +307,25 @@ public class Tank extends GameObject {
 //        this.ammo.forEach(bullet -> bullet.drawImage(g2d));
         for (Bullet bullet : this.ammo) {
             if (bullet.isActive()) {
-//                bullet.update();
+                bullet.update();
                 bullet.drawImage(g2d);
             }
         }
         drawReloadBar(g2d);
         drawHealthBar(g2d);
+        drawLiveIcon(g2d);
+    }
+
+    private void drawLiveIcon(Graphics2D g2d) {
+        BufferedImage liveIcon = ResourceManager.getSprite("liveIcon");
+        BufferedImage unliveIcon = ResourceManager.getSprite("unliveIcon");
+
+        for (int i = 0; i < this.live; i++) {
+            g2d.drawImage(liveIcon, (int) (x - 20 + i * 35), (int) (y - 70), null);
+        }
+        for (int i = 0; i < MAX_LIVE; i++) {
+            g2d.drawImage(unliveIcon, (int) (x - 26 + i * 35), (int) (y - 75), null);
+        }
     }
 
     private void drawReloadBar(Graphics2D g2d) {
@@ -262,15 +342,23 @@ public class Tank extends GameObject {
     }
 
     private void drawHealthBar(Graphics2D g2d) {
-        g2d.setColor(Color.GREEN);
-        g2d.drawRect((int) x - 20, (int) y - 40, 100, 20);
-        g2d.fillRect((int) x - 20, (int) y - 40, (int) this.health, 20);
-        if (this.health < 100) {
+        if (this.health == 100) {
+            g2d.setColor(Color.GREEN);
+            fillHealthBar(g2d);
+        } else if (this.health > 40 && this.health < 100) {
             g2d.setColor(Color.ORANGE);
-            g2d.drawString("Low health!!!", (int) x + 82, (int) y - 12);
+            fillHealthBar(g2d);
         }
-//        else if (this.health < 50) {
-//            g2d.setColor(Color.RED);
-//        }
+        if (this.health <= 40) {
+            g2d.setColor(Color.ORANGE);
+            g2d.drawString("Low health!!!", (int) x + 82, (int) y - 25);
+            g2d.setColor(Color.RED);
+            fillHealthBar(g2d);
+        }
+    }
+
+    private void fillHealthBar(Graphics2D g2d) {
+        g2d.drawRect((int) x - 20, (int) y - 40, 100, 20);
+        g2d.fillRect((int) x - 20, (int) y - 40, this.health, 20);
     }
 }

@@ -21,6 +21,11 @@ public class Wall extends GameObject {
     }
 
     @Override
+    public boolean isActive() {
+        return true;
+    }
+
+    @Override
     public void collides(GameObject obj2) {
 
     }
