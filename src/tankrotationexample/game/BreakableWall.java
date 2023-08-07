@@ -4,7 +4,8 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public class BreakableWall extends GameObject {
-    float x, y;
+    float x;
+    float y;
     BufferedImage img;
     private boolean isActive;
     private Rectangle hitBox;
@@ -14,6 +15,14 @@ public class BreakableWall extends GameObject {
         this.img = img;
         this.hitBox = new Rectangle((int) x, (int) y, this.img.getWidth(), this.img.getHeight());
         this.isActive = true;
+    }
+
+    public float getX() {
+        return x;
+    }
+
+    public float getY() {
+        return y;
     }
 
     public Rectangle getHitBox() {

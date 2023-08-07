@@ -228,10 +228,11 @@ public class Tank extends GameObject {
             float bulletX = this.x + ((float) this.img.getWidth() / 2) + (float) (Math.cos(Math.toRadians(this.angle)) * BULLET_OFFSET);
             float bulletY = this.y + ((float) this.img.getHeight() / 2) + (float) (Math.sin(Math.toRadians(this.angle)) * BULLET_OFFSET);
 
-            var bullet = new Bullet(bulletX, bulletY, ResourceManager.getSprite("bullet"), angle, 6);
+            var bullet = new Bullet(bulletX, bulletY, ResourceManager.getSprite("bullet"), angle, 6, this.gameWorld);
             this.ammo.add(bullet);
             this.gameWorld.addGameObject(bullet);
-            this.gameWorld.addAnimations(new Animation(x, y, ResourceManager.getAnimation("bulletshoot")));
+//            this.gameWorld.addAnimations(new Animation(x, y, ResourceManager.getAnimation("bulletshoot")));
+            this.gameWorld.addAnimations(new Animation(x, y, ResourceManager.getAnimation("puffsmoke")));
         }
 
         this.hitBox.setLocation((int) x, (int) y);

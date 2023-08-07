@@ -94,7 +94,8 @@ public class GameWorld extends JPanel implements Runnable {
   5-->speed
   6-->shield
  */
-        InputStreamReader isr = new InputStreamReader(Objects.requireNonNull(ResourceManager.class.getClassLoader().getResourceAsStream("maps/map1.csv")));
+        InputStreamReader isr = new InputStreamReader(Objects.requireNonNull(ResourceManager.class.getClassLoader().
+                getResourceAsStream("maps/map2.csv")));
 //        this.animations.add(new Animation(300, 300, ResourceManager.getAnimation("bullethit")));
 //        this.animations.add(new Animation(350, 300, ResourceManager.getAnimation("bulletshoot")));
 //        this.animations.add(new Animation(400, 300, ResourceManager.getAnimation("powerpick")));
