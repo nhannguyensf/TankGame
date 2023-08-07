@@ -48,6 +48,9 @@ public class ResourceManager {
             ResourceManager.sprites.put("floor", loadSprites("floor/floor3.jpg"));
 //            ResourceManager.sprites.put("floor", loadSprites("floor/bg.bmp"));
             ResourceManager.sprites.put("menu", loadSprites("menu/title.png"));
+            ResourceManager.sprites.put("tank1win", loadSprites("tank/tank1end.png"));
+            ResourceManager.sprites.put("tank2win", loadSprites("tank/tank2end.png"));
+
             ResourceManager.sprites.put("liveIcon", loadSprites("tank/live-icon1.png"));
             ResourceManager.sprites.put("unliveIcon", loadSprites("tank/unlive-icon1.png"));
 

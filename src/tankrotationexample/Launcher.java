@@ -31,6 +31,8 @@ public class Launcher {
      * called the event dispatch thread.
      */
     private GameWorld gamePanel;
+    private EndGamePanel endGamePanel;
+
     /*
      * CardLayout is used to manage our sub-panels. This is a layout manager
      * used for our game. It will be attached to the main panel.
@@ -62,12 +64,12 @@ public class Launcher {
          * end panel is used to show the end game panel.  it will contain
          * two buttons restart and exit.
          */
-        JPanel endPanel = new EndGamePanel(this); // create a new end game pane;
+        endGamePanel = new EndGamePanel(this); // create a new end game pane;
         cl = new CardLayout(); // creating a new CardLayout Panel
         this.mainPanel.setLayout(cl); // set the layout of the main panel to our card layout
         this.mainPanel.add(startPanel, "start"); //add the start panel to the main panel
         this.mainPanel.add(gamePanel, "game");   //add the game panel to the main panel
-        this.mainPanel.add(endPanel, "end");    // add the end game panel to the main panel
+        this.mainPanel.add(endGamePanel, "end");    // add the end game panel to the main panel
         this.jf.add(mainPanel); // add the main panel to the JFrame
         this.jf.setResizable(false); //make the JFrame not resizable
         this.setFrame("start"); // set the current panel to start panel
@@ -92,6 +94,10 @@ public class Launcher {
         }
         this.cl.show(mainPanel, type); // change current panel shown on main panel tp the panel denoted by type.
         this.jf.setVisible(true); // show the JFrame
+    }
+
+    public EndGamePanel getEndGamePanel() {
+        return this.endGamePanel;
     }
 
     public JFrame getJf() {

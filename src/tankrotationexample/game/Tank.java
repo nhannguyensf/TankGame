@@ -16,7 +16,7 @@ public class Tank extends GameObject {
     private static final long SPEED_INCREASE_DURATION = 3000;
     private static final int MAX_LIVE = 3;
     private static float SPEED = MIN_SPEED;
-    private final long reloadAmmo = 3000;
+    private final long reloadAmmo = 1000;
     private final float ROTATIONSPEED = 2.0f;
     public boolean isDead = false;
     List<Bullet> ammo = new ArrayList<>();
@@ -39,7 +39,6 @@ public class Tank extends GameObject {
     private boolean shootPressed;
     private GameWorld gameWorld;
 
-
     public Tank(float x, float y, float vx, float vy, float angle, BufferedImage img, GameWorld gameWorld) {
         this.x = x;
         this.y = y;
@@ -52,7 +51,12 @@ public class Tank extends GameObject {
         this.gameWorld = gameWorld;
     }
 
+
     public Tank() {
+    }
+
+    public int getLive() {
+        return this.live;
     }
 
     public Rectangle getHitBox() {
@@ -216,7 +220,8 @@ public class Tank extends GameObject {
 
             // Define the offset to keep the ammo further from the tank
 //            final float BULLET_OFFSET = 20.0f;
-            final float BULLET_OFFSET = this.img.getWidth();;
+            final float BULLET_OFFSET = this.img.getWidth();
+            ;
             // Calculate the offset for the x and y coordinates based on the angle
 //            float bulletX = this.x + ((float) img.getWidth() / 2 - BULLET_OFFSET / 2) + (float) (Math.cos(Math.toRadians(angle)) * ((img.getWidth() / 2) + BULLET_OFFSET));
 //            float bulletY = this.y + ((float) img.getHeight() / 2 - BULLET_OFFSET / 2) + (float) (Math.sin(Math.toRadians(angle)) * ((img.getWidth() / 2) + BULLET_OFFSET));

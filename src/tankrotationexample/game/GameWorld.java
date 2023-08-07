@@ -56,6 +56,15 @@ public class GameWorld extends JPanel implements Runnable {
                 this.bot2.update(t2); // update AI tank2 to follow t2
                 this.animations.forEach(animation -> animation.update());
                 checkCollision();
+                if (t1.getLive() <= 0) {
+                    lf.getEndGamePanel().setWinnerPlayer(2);
+                    lf.setFrame("end");
+                    break;
+                } else if (t2.getLive() <= 0) {
+                    lf.getEndGamePanel().setWinnerPlayer(1);
+                    lf.setFrame("end");
+                    break;
+                }
                 this.repaint();   // redraw game
                 /*
                  * Sleep for 1000/144 ms (~6.9ms). This is done to have our
