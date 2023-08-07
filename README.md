@@ -23,9 +23,9 @@ The jar folder is to be used to store the built jar of your term-project.
 
 # Required Information when Submitting Tank Game
 
-## Version of Java Used:
+## Version of Java Used: Java 20 (Oracle JDK 20)
 
-## IDE used: 
+## IDE used: IntelliJ IDEA 2023.2
 
 ## Steps to Import project into IDE:
 
@@ -37,10 +37,10 @@ The jar folder is to be used to store the built jar of your term-project.
 
 |               | Player 1 | Player 2 |
 |---------------|----------|----------|
-|  Forward      |          |          |
-|  Backward     |          |          |
-|  Rotate left  |          |          |
-|  Rotate Right |          |          |
-|  Shoot        |          |          |
+|  Forward      | W        | Up       |
+|  Backward     | S        | Down     |
+|  Rotate left  | A        | Left     |
+|  Rotate Right | D        | Right    |
+|  Shoot        | Space    | NUMPAD 0 |
 
 <!-- you may add more controls if you need to. -->
