@@ -4,17 +4,25 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public class BreakableWall extends GameObject {
-    private final boolean isActive;
-    float x, y;
+    float x;
+    float y;
     BufferedImage img;
+    private boolean isActive;
     private Rectangle hitBox;
-
     public BreakableWall(float x, float y, BufferedImage img) {
         this.x = x;
         this.y = y;
         this.img = img;
         this.hitBox = new Rectangle((int) x, (int) y, this.img.getWidth(), this.img.getHeight());
         this.isActive = true;
+    }
+
+    public float getX() {
+        return x;
+    }
+
+    public float getY() {
+        return y;
     }
 
     public Rectangle getHitBox() {
@@ -24,6 +32,10 @@ public class BreakableWall extends GameObject {
     @Override
     public boolean isActive() {
         return this.isActive;
+    }
+
+    public void setActive(boolean active) {
+        this.isActive = active;
     }
 
     @Override

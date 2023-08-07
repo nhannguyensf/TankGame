@@ -3,6 +3,7 @@ package tankrotationexample.Resources;
 import tankrotationexample.game.Sound;
 
 import javax.imageio.ImageIO;
+import javax.sound.sampled.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.*;
@@ -60,6 +61,47 @@ public class ResourceManager {
         }
     }
 
+    public static Sound getSound(String type) {
+        if (!ResourceManager.sounds.containsKey(type)) {
+            throw new RuntimeException("%s is missing from sound resources".formatted(type));
+        }
+        return ResourceManager.sounds.get(type);
+    }
+
+    public static Sound loadSounds(String path) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+        AudioInputStream ais = AudioSystem.getAudioInputStream(
+                Objects.requireNonNull(
+                        ResourceManager.class.getClassLoader().getResource(path)
+                )
+        );
+        Clip c = AudioSystem.getClip();
+        c.open(ais);
+        Sound s = new Sound(c);
+        s.setVolume(.2f);
+        return s;
+    }
+
+    public static void initSounds() {
+        try {
+            ResourceManager.sounds.put("bullet_shoot", loadSounds("sounds/bullet_shoot.wav"));
+            ResourceManager.sounds.put("explosion", loadSounds("sounds/explosion.wav"));
+            ResourceManager.sounds.put("bg", loadSounds("sounds/Music.mid"));
+            ResourceManager.sounds.put("pickup", loadSounds("sounds/pickup.wav"));
+            ResourceManager.sounds.put("shotfire", loadSounds("sounds/shofiring.wav"));
+
+
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
+    public static List<BufferedImage> getAnimation(String type) {
+        if (!ResourceManager.animations.containsKey(type)) {
+            throw new RuntimeException("%s is missing from animation resources".formatted(type));
+        }
+        return ResourceManager.animations.get(type);
+    }
+
     public static void initAnimations() {
         String baseName = "animations/%s/%s_%04d.png";
         animationInfo.forEach((animationName, frameCount) -> {
@@ -80,6 +122,7 @@ public class ResourceManager {
     public static void loadResources() {
         ResourceManager.initSprites();
         ResourceManager.initAnimations();
+        ResourceManager.initSounds();
     }
 
     public static BufferedImage getSprite(String type) {
@@ -89,22 +132,17 @@ public class ResourceManager {
         return ResourceManager.sprites.get(type);
     }
 
-    public static Sound getSounds(String type) {
-        if (!ResourceManager.sounds.containsKey(type)) {
-            throw new RuntimeException("%s is missing from sound resources".formatted(type));
+    public static void main(String[] args) {
+        ResourceManager.loadResources();
+        Sound bg = ResourceManager.getSound("bg");
+        bg.setLooping();
+        while (true) {
+            try {
+                ResourceManager.getSound("bullet_shoot").playSound();
+                Thread.sleep(1500);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
-        return ResourceManager.sounds.get(type);
     }
-
-    public static List<BufferedImage> getAnimation(String type) {
-        if (!ResourceManager.animations.containsKey(type)) {
-            throw new RuntimeException("%s is missing from animation resources".formatted(type));
-        }
-        return ResourceManager.animations.get(type);
-    }
-
-//    public static void main(String[] args) {
-//        ResourceManager.loadResources();
-//        System.out.println();
-//    }
 }

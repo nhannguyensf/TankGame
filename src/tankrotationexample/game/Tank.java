@@ -16,7 +16,7 @@ public class Tank extends GameObject {
     private static final long SPEED_INCREASE_DURATION = 3000;
     private static final int MAX_LIVE = 3;
     private static float SPEED = MIN_SPEED;
-    private final long reloadAmmo = 1000;
+    private final long reloadAmmo = 2000;
     private final float ROTATIONSPEED = 2.0f;
     public boolean isDead = false;
     List<Bullet> ammo = new ArrayList<>();
@@ -198,7 +198,7 @@ public class Tank extends GameObject {
         this.shootPressed = false;
     }
 
-    void update(GameWorld gw) {
+    void update() {
         if (this.UpPressed) {
             this.moveForwards();
         }
@@ -228,10 +228,12 @@ public class Tank extends GameObject {
             float bulletX = this.x + ((float) this.img.getWidth() / 2) + (float) (Math.cos(Math.toRadians(this.angle)) * BULLET_OFFSET);
             float bulletY = this.y + ((float) this.img.getHeight() / 2) + (float) (Math.sin(Math.toRadians(this.angle)) * BULLET_OFFSET);
 
-            var bullet = new Bullet(bulletX, bulletY, ResourceManager.getSprite("bullet"), angle, 6);
+            var bullet = new Bullet(bulletX, bulletY, ResourceManager.getSprite("bullet"), angle, 6, this.gameWorld);
             this.ammo.add(bullet);
             this.gameWorld.addGameObject(bullet);
-            gw.animations.add(new Animation(x, y, ResourceManager.getAnimation("bulletshoot")));
+//            this.gameWorld.addAnimations(new Animation(x, y, ResourceManager.getAnimation("bulletshoot")));
+            this.gameWorld.addAnimations(new Animation(x, y, ResourceManager.getAnimation("puffsmoke")));
+            ResourceManager.getSound("bullet_shoot").playSound();
         }
 
         this.hitBox.setLocation((int) x, (int) y);

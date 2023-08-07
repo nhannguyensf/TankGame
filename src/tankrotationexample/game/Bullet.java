@@ -1,6 +1,7 @@
 package tankrotationexample.game;
 
 import tankrotationexample.GameConstants;
+import tankrotationexample.Resources.ResourceManager;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
@@ -17,9 +18,9 @@ public class Bullet extends GameObject {
     private float R;
     private BufferedImage img;
     private Rectangle hitBox;
+    private GameWorld gameWorld;
 
-
-    Bullet(float x, float y, BufferedImage img, float angle, float bulletSpeed) {
+    Bullet(float x, float y, BufferedImage img, float angle, float bulletSpeed, GameWorld gameWorld) {
         this.x = x;
         this.y = y;
         this.vx = 0;
@@ -29,6 +30,7 @@ public class Bullet extends GameObject {
         this.R = bulletSpeed;
         this.isActive = true;
         this.hitBox = new Rectangle((int) x, (int) y, this.img.getWidth(), this.img.getHeight());
+        this.gameWorld = gameWorld;
     }
 
     public Rectangle getHitBox() {
@@ -98,6 +100,7 @@ public class Bullet extends GameObject {
     }
 
     private void handleTankCollision(Tank playerTank) {
+        this.gameWorld.addAnimations(new Animation(playerTank.getX(), playerTank.getY() - 5, ResourceManager.getAnimation("rockethit")));
         this.isActive = false;
         playerTank.health -= this.bulletDamage;
         System.out.println("Tank health: " + playerTank.health);
@@ -107,7 +110,10 @@ public class Bullet extends GameObject {
     }
 
     private void handleBreakableWallCollision(BreakableWall with) {
+        this.gameWorld.addAnimations(new Animation(with.getX(), with.getY() - 5, ResourceManager.getAnimation("bullethit")));
+        ResourceManager.getSound("explosion").playSound();
         this.isActive = false;
+        with.setActive(false);
     }
 
     private void handleWallCollision() {
@@ -122,9 +128,5 @@ public class Bullet extends GameObject {
         if (this.isActive) {
             g2d.drawImage(this.img, rotation, null);
         }
-    }
-
-    public int getDamage() {
-        return this.bulletDamage;
     }
 }

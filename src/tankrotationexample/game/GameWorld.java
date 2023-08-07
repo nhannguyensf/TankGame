@@ -21,6 +21,7 @@ public class GameWorld extends JPanel implements Runnable {
     static double scaleFactor = 0.1;
     private final Launcher lf;
     List<Animation> animations = new ArrayList<>();
+    Sound bg = ResourceManager.getSound("bg");
     private List<GameObject> gobjs = new ArrayList<>(1000);
     private BufferedImage world;
     private Tank t1;
@@ -48,10 +49,12 @@ public class GameWorld extends JPanel implements Runnable {
     @Override
     public void run() {
         try {
+            bg.setLooping();
+            bg.playSound();
             while (true) {
                 this.tick++;
-                this.t1.update(this); // update tank
-                this.t2.update(this); // update tank
+                this.t1.update(); // update tank
+                this.t2.update(); // update tank
                 this.bot1.update(t1); // update AI tank1 to follow t1
                 this.bot2.update(t2); // update AI tank2 to follow t2
                 this.animations.forEach(animation -> animation.update());
@@ -94,14 +97,10 @@ public class GameWorld extends JPanel implements Runnable {
   5-->speed
   6-->shield
  */
-        InputStreamReader isr = new InputStreamReader(Objects.requireNonNull(ResourceManager.class.getClassLoader().getResourceAsStream("maps/map1.csv")));
-//        this.animations.add(new Animation(300, 300, ResourceManager.getAnimation("bullethit")));
-//        this.animations.add(new Animation(350, 300, ResourceManager.getAnimation("bulletshoot")));
-//        this.animations.add(new Animation(400, 300, ResourceManager.getAnimation("powerpick")));
-//        this.animations.add(new Animation(450, 300, ResourceManager.getAnimation("puffsmoke")));
-//        this.animations.add(new Animation(500, 300, ResourceManager.getAnimation("rocketflame")));
-//        this.animations.add(new Animation(550, 300, ResourceManager.getAnimation("rockethit")));
-
+        InputStreamReader isr = new InputStreamReader(
+                Objects.requireNonNull(
+                        ResourceManager.class.getClassLoader().
+                                getResourceAsStream("maps/map2.csv")));
         try (BufferedReader mapReader = new BufferedReader(isr)) {
             int row = 0;
             String[] gameItems;
@@ -150,6 +149,9 @@ public class GameWorld extends JPanel implements Runnable {
                 GameObject obj2 = this.gobjs.get(j);
                 if (obj1.getClass() == obj2.getClass() || obj2 instanceof BotAI) continue;
                 if (obj1.getHitBox().intersects(obj2.getHitBox())) {
+                    if (obj1 instanceof Tank && obj2 instanceof PowerUp) {
+                        ResourceManager.getSound("pickup").playSound();
+                    }
                     System.out.println(obj1 + " HAS HIT " + obj2);
                     obj1.collides(obj2);
                 }
@@ -160,6 +162,10 @@ public class GameWorld extends JPanel implements Runnable {
 
     public void addGameObject(GameObject obj) {
         this.gobjs.add(obj);
+    }
+
+    public void addAnimations(Animation animation) {
+        this.animations.add(animation);
     }
 
     private void drawFloor(Graphics2D buffer) {

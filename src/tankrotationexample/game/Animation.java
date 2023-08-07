@@ -8,7 +8,7 @@ public class Animation {
     float x, y;
     private List<BufferedImage> frames;
     private long timeSinceUpdate = 0;
-    private long delay = 90;
+    private long delay = 50;
     private int currentFrame = 0;
     private boolean isRunning = false;
 
@@ -25,14 +25,14 @@ public class Animation {
             this.currentFrame++;
 //            this.currentFrame = (currentFrame + 1) % this.frames.size();
             if (this.currentFrame == this.frames.size()) {
-                isRunning = false;
+                this.isRunning = false;
             }
         }
     }
 
     public void drawImage(Graphics2D g) {
-        if (isRunning) {
-            g.drawImage(this.frames.get(currentFrame), (int) x, (int) y, null);
+        if (this.isRunning) {
+            g.drawImage(this.frames.get(currentFrame), (int) this.x, (int) this.y, null);
         }
     }
 }
