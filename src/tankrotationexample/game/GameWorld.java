@@ -50,8 +50,8 @@ public class GameWorld extends JPanel implements Runnable {
         try {
             while (true) {
                 this.tick++;
-                this.t1.update(this); // update tank
-                this.t2.update(this); // update tank
+                this.t1.update(); // update tank
+                this.t2.update(); // update tank
                 this.bot1.update(t1); // update AI tank1 to follow t1
                 this.bot2.update(t2); // update AI tank2 to follow t2
                 this.animations.forEach(animation -> animation.update());
@@ -160,6 +160,10 @@ public class GameWorld extends JPanel implements Runnable {
 
     public void addGameObject(GameObject obj) {
         this.gobjs.add(obj);
+    }
+
+    public void addAnimations(Animation animation) {
+        this.animations.add(animation);
     }
 
     private void drawFloor(Graphics2D buffer) {

@@ -108,6 +108,7 @@ public class Bullet extends GameObject {
 
     private void handleBreakableWallCollision(BreakableWall with) {
         this.isActive = false;
+        with.setActive(false);
     }
 
     private void handleWallCollision() {
@@ -122,9 +123,5 @@ public class Bullet extends GameObject {
         if (this.isActive) {
             g2d.drawImage(this.img, rotation, null);
         }
-    }
-
-    public int getDamage() {
-        return this.bulletDamage;
     }
 }

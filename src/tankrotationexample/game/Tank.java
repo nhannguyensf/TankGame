@@ -198,7 +198,7 @@ public class Tank extends GameObject {
         this.shootPressed = false;
     }
 
-    void update(GameWorld gw) {
+    void update() {
         if (this.UpPressed) {
             this.moveForwards();
         }
@@ -231,7 +231,7 @@ public class Tank extends GameObject {
             var bullet = new Bullet(bulletX, bulletY, ResourceManager.getSprite("bullet"), angle, 6);
             this.ammo.add(bullet);
             this.gameWorld.addGameObject(bullet);
-            gw.animations.add(new Animation(x, y, ResourceManager.getAnimation("bulletshoot")));
+            this.gameWorld.addAnimations(new Animation(x, y, ResourceManager.getAnimation("bulletshoot")));
         }
 
         this.hitBox.setLocation((int) x, (int) y);
