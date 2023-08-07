@@ -100,7 +100,7 @@ public class Bullet extends GameObject {
     }
 
     private void handleTankCollision(Tank playerTank) {
-        this.gameWorld.addAnimations(new Animation(playerTank.getX(), playerTank.getY()-5, ResourceManager.getAnimation("rockethit")));
+        this.gameWorld.addAnimations(new Animation(playerTank.getX(), playerTank.getY() - 5, ResourceManager.getAnimation("rockethit")));
         this.isActive = false;
         playerTank.health -= this.bulletDamage;
         System.out.println("Tank health: " + playerTank.health);
@@ -110,7 +110,8 @@ public class Bullet extends GameObject {
     }
 
     private void handleBreakableWallCollision(BreakableWall with) {
-        this.gameWorld.addAnimations(new Animation(with.getX(), with.getY()-5, ResourceManager.getAnimation("bullethit")));
+        this.gameWorld.addAnimations(new Animation(with.getX(), with.getY() - 5, ResourceManager.getAnimation("bullethit")));
+        ResourceManager.getSound("explosion").playSound();
         this.isActive = false;
         with.setActive(false);
     }

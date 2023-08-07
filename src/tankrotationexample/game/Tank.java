@@ -16,7 +16,7 @@ public class Tank extends GameObject {
     private static final long SPEED_INCREASE_DURATION = 3000;
     private static final int MAX_LIVE = 3;
     private static float SPEED = MIN_SPEED;
-    private final long reloadAmmo = 1000;
+    private final long reloadAmmo = 2000;
     private final float ROTATIONSPEED = 2.0f;
     public boolean isDead = false;
     List<Bullet> ammo = new ArrayList<>();
@@ -233,6 +233,7 @@ public class Tank extends GameObject {
             this.gameWorld.addGameObject(bullet);
 //            this.gameWorld.addAnimations(new Animation(x, y, ResourceManager.getAnimation("bulletshoot")));
             this.gameWorld.addAnimations(new Animation(x, y, ResourceManager.getAnimation("puffsmoke")));
+            ResourceManager.getSound("bullet_shoot").playSound();
         }
 
         this.hitBox.setLocation((int) x, (int) y);
