@@ -153,18 +153,18 @@ public class GameWorld extends JPanel implements Runnable {
         this.gobjs.add(obj);
     }
 
-    //    private void drawFloor(Graphics2D buffer) {
-//        BufferedImage floor = ResourceManager.getSprite("floor");
-//        buffer.drawImage(floor, 0, 0, null);
-//    }
     private void drawFloor(Graphics2D buffer) {
         BufferedImage floor = ResourceManager.getSprite("floor");
-        for (int i = 0; i < GameConstants.GAME_WORLD_WIDTH; i += 320) {
-            for (int j = 0; j < GameConstants.GAME_WORLD_HEIGHT; j += 240) {
-                buffer.drawImage(floor, i, j, null);
-            }
-        }
+        buffer.drawImage(floor, 0, 0, null);
     }
+//    private void drawFloor(Graphics2D buffer) {
+//        BufferedImage floor = ResourceManager.getSprite("floor");
+//        for (int i = 0; i < GameConstants.GAME_WORLD_WIDTH; i += 320) {
+//            for (int j = 0; j < GameConstants.GAME_WORLD_HEIGHT; j += 240) {
+//                buffer.drawImage(floor, i, j, null);
+//            }
+//        }
+//    }
 
     private void renderMinimap(Graphics2D g2) {
         BufferedImage mm = this.world.getSubimage(0, 0,
@@ -187,18 +187,18 @@ public class GameWorld extends JPanel implements Runnable {
         int subImageWidth = GameConstants.GAME_SCREEN_WIDTH / 2;
         int subImageHeight = GameConstants.GAME_SCREEN_HEIGHT;
 
-        int t1X = (int) (t1.getX() - subImageWidth / 2);
-        int t1Y = (int) (t1.getY() - subImageHeight / 2);
-        int t2X = (int) (t2.getX() - subImageWidth / 2);
-        int t2Y = (int) (t2.getY() - subImageHeight / 2);
+        int t1CornerX = (int) (t1.getX() - subImageWidth / 2);
+        int t1CornerY = (int) (t1.getY() - subImageHeight / 2);
+        int t2CornerX = (int) (t2.getX() - subImageWidth / 2);
+        int t2CornerY = (int) (t2.getY() - subImageHeight / 2);
 
-        t1X = Math.max(0, Math.min(t1X, GameConstants.GAME_WORLD_WIDTH - subImageWidth));
-        t1Y = Math.max(0, Math.min(t1Y, GameConstants.GAME_WORLD_HEIGHT - subImageHeight));
-        t2X = Math.max(0, Math.min(t2X, GameConstants.GAME_WORLD_WIDTH - subImageWidth));
-        t2Y = Math.max(0, Math.min(t2Y, GameConstants.GAME_WORLD_HEIGHT - subImageHeight));
+        t1CornerX = Math.max(0, Math.min(t1CornerX, GameConstants.GAME_WORLD_WIDTH - subImageWidth));
+        t1CornerY = Math.max(0, Math.min(t1CornerY, GameConstants.GAME_WORLD_HEIGHT - subImageHeight));
+        t2CornerX = Math.max(0, Math.min(t2CornerX, GameConstants.GAME_WORLD_WIDTH - subImageWidth));
+        t2CornerY = Math.max(0, Math.min(t2CornerY, GameConstants.GAME_WORLD_HEIGHT - subImageHeight));
 
-        BufferedImage lh = this.world.getSubimage(t1X, t1Y, subImageWidth, subImageHeight);
-        BufferedImage rh = this.world.getSubimage(t2X, t2Y, subImageWidth, subImageHeight);
+        BufferedImage lh = this.world.getSubimage(t1CornerX, t1CornerY, subImageWidth, subImageHeight);
+        BufferedImage rh = this.world.getSubimage(t2CornerX, t2CornerY, subImageWidth, subImageHeight);
         g2.drawImage(lh, 0, 0, null);
         g2.drawImage(rh, GameConstants.GAME_SCREEN_WIDTH / 2 + 2, 0, null);
     }

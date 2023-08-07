@@ -31,22 +31,26 @@ public class ResourceManager {
             ResourceManager.sprites.put("tank2", loadSprites("tank/tank2.png"));
             ResourceManager.sprites.put("tankAI", loadSprites("tank/jet5.png"));
 
-
             ResourceManager.sprites.put("bullet", loadSprites("bullet/bullet.jpg"));
             ResourceManager.sprites.put("rocket1", loadSprites("bullet/rocket1.png"));
             ResourceManager.sprites.put("rocket2", loadSprites("bullet/rocket2.png"));
 
-            ResourceManager.sprites.put("unbreak", loadSprites("walls/unbreak.jpg"));
-            ResourceManager.sprites.put("break1", loadSprites("walls/break1.jpg"));
+//            ResourceManager.sprites.put("unbreak", loadSprites("walls/unbreak.jpg"));
+            ResourceManager.sprites.put("unbreak", loadSprites("walls/unbreak2.png"));
+
+            ResourceManager.sprites.put("break1", loadSprites("walls/break1.png"));
             ResourceManager.sprites.put("break2", loadSprites("walls/break2.jpg"));
 
             ResourceManager.sprites.put("speed", loadSprites("powerups/speed.png"));
             ResourceManager.sprites.put("health", loadSprites("powerups/health1.png"));
-            ResourceManager.sprites.put("shield", loadSprites("powerups/shield.png"));
+            ResourceManager.sprites.put("shield", loadSprites("powerups/liveItem1.png"));
 
-//            ResourceManager.sprites.put("floor", loadSprites("floor/floor1.jpeg"));
-            ResourceManager.sprites.put("floor", loadSprites("floor/bg.bmp"));
+            ResourceManager.sprites.put("floor", loadSprites("floor/floor3.jpg"));
+//            ResourceManager.sprites.put("floor", loadSprites("floor/bg.bmp"));
             ResourceManager.sprites.put("menu", loadSprites("menu/title.png"));
+            ResourceManager.sprites.put("liveIcon", loadSprites("tank/live-icon1.png"));
+            ResourceManager.sprites.put("unliveIcon", loadSprites("tank/unlive-icon1.png"));
+
 
         } catch (IOException e) {
             throw new RuntimeException(e);

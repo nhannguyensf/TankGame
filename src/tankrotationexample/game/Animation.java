@@ -8,7 +8,7 @@ public class Animation {
     float x, y;
     private List<BufferedImage> frames;
     private long timeSinceUpdate = 0;
-    private long delay = 40;
+    private long delay = 90;
     private int currentFrame = 0;
     private boolean isRunning = false;
 

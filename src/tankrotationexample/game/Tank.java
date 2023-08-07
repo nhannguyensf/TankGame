@@ -150,8 +150,8 @@ public class Tank extends GameObject {
     private void respawn() {
         this.health = MAX_HEALTH; // reset health
         this.isDead = false; // reset the isDead flag
-        this.x = starX;
-        this.y = starY;
+//        this.x = starX;
+//        this.y = starY;
     }
 
     void toggleUpPressed() {
@@ -215,13 +215,17 @@ public class Tank extends GameObject {
             this.timeSinceLastShot = System.currentTimeMillis();
 
             // Define the offset to keep the ammo further from the tank
-            final float BULLET_OFFSET = 20.0f;
+//            final float BULLET_OFFSET = 20.0f;
+            final float BULLET_OFFSET = this.img.getWidth();;
             // Calculate the offset for the x and y coordinates based on the angle
-            float bulletX = x + ((float) img.getWidth() / 2 - BULLET_OFFSET / 2) + (float) (Math.cos(Math.toRadians(angle)) * ((img.getWidth() / 2) + BULLET_OFFSET));
-            float bulletY = y + ((float) img.getHeight() / 2 - BULLET_OFFSET / 2) + (float) (Math.sin(Math.toRadians(angle)) * ((img.getWidth() / 2) + BULLET_OFFSET));
+//            float bulletX = this.x + ((float) img.getWidth() / 2 - BULLET_OFFSET / 2) + (float) (Math.cos(Math.toRadians(angle)) * ((img.getWidth() / 2) + BULLET_OFFSET));
+//            float bulletY = this.y + ((float) img.getHeight() / 2 - BULLET_OFFSET / 2) + (float) (Math.sin(Math.toRadians(angle)) * ((img.getWidth() / 2) + BULLET_OFFSET));
+            float bulletX = this.x + ((float) this.img.getWidth() / 2) + (float) (Math.cos(Math.toRadians(this.angle)) * BULLET_OFFSET);
+            float bulletY = this.y + ((float) this.img.getHeight() / 2) + (float) (Math.sin(Math.toRadians(this.angle)) * BULLET_OFFSET);
+
             var bullet = new Bullet(bulletX, bulletY, ResourceManager.getSprite("bullet"), angle, 6);
             this.ammo.add(bullet);
-            gameWorld.addGameObject(bullet);
+            this.gameWorld.addGameObject(bullet);
             gw.animations.add(new Animation(x, y, ResourceManager.getAnimation("bulletshoot")));
         }
 
@@ -304,6 +308,19 @@ public class Tank extends GameObject {
         }
         drawReloadBar(g2d);
         drawHealthBar(g2d);
+        drawLiveIcon(g2d);
+    }
+
+    private void drawLiveIcon(Graphics2D g2d) {
+        BufferedImage liveIcon = ResourceManager.getSprite("liveIcon");
+        BufferedImage unliveIcon = ResourceManager.getSprite("unliveIcon");
+
+        for (int i = 0; i < this.live; i++) {
+            g2d.drawImage(liveIcon, (int) (x - 20 + i * 35), (int) (y - 70), null);
+        }
+        for (int i = 0; i < MAX_LIVE; i++) {
+            g2d.drawImage(unliveIcon, (int) (x - 26 + i * 35), (int) (y - 75), null);
+        }
     }
 
     private void drawReloadBar(Graphics2D g2d) {
@@ -320,15 +337,23 @@ public class Tank extends GameObject {
     }
 
     private void drawHealthBar(Graphics2D g2d) {
-        g2d.setColor(Color.GREEN);
+        if (this.health == 100) {
+            g2d.setColor(Color.GREEN);
+            fillHealthBar(g2d);
+        } else if (this.health > 40 && this.health < 100) {
+            g2d.setColor(Color.ORANGE);
+            fillHealthBar(g2d);
+        }
+        if (this.health <= 40) {
+            g2d.setColor(Color.ORANGE);
+            g2d.drawString("Low health!!!", (int) x + 82, (int) y - 25);
+            g2d.setColor(Color.RED);
+            fillHealthBar(g2d);
+        }
+    }
+
+    private void fillHealthBar(Graphics2D g2d) {
         g2d.drawRect((int) x - 20, (int) y - 40, 100, 20);
         g2d.fillRect((int) x - 20, (int) y - 40, this.health, 20);
-        if (this.health < 100) {
-            g2d.setColor(Color.ORANGE);
-            g2d.drawString("Low health!!!", (int) x + 82, (int) y - 12);
-        }
-//        else if (this.health < 50) {
-//            g2d.setColor(Color.RED);
-//        }
     }
 }
