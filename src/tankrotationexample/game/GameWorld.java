@@ -21,7 +21,9 @@ public class GameWorld extends JPanel implements Runnable {
     static double scaleFactor = 0.1;
     private final Launcher lf;
     List<Animation> animations = new ArrayList<>();
-    Sound bg = ResourceManager.getSound("bg");
+    Sound battle = ResourceManager.getSound("battle");
+//    Sound winnerSound = ResourceManager.getSound("winner");
+
     private List<GameObject> gobjs = new ArrayList<>(1000);
     private BufferedImage world;
     private Tank t1;
@@ -42,15 +44,17 @@ public class GameWorld extends JPanel implements Runnable {
      */
     public void resetGame() {
         this.tick = 0;
-        this.t1.setX(300);
-        this.t1.setY(300);
+        this.gobjs.clear();
+        this.animations.clear();
+        InitializeGame();
     }
 
     @Override
     public void run() {
         try {
-            bg.setLooping();
-            bg.playSound();
+            resetGame();
+            battle.setLooping();
+            battle.playSound();
             while (true) {
                 this.tick++;
                 this.t1.update(); // update tank
@@ -60,12 +64,10 @@ public class GameWorld extends JPanel implements Runnable {
                 this.animations.forEach(animation -> animation.update());
                 checkCollision();
                 if (t1.getLive() <= 0) {
-                    lf.getEndGamePanel().setWinnerPlayer(2);
-                    lf.setFrame("end");
+                    showResult(2);
                     break;
                 } else if (t2.getLive() <= 0) {
-                    lf.getEndGamePanel().setWinnerPlayer(1);
-                    lf.setFrame("end");
+                    showResult(1);
                     break;
                 }
                 this.repaint();   // redraw game
@@ -78,6 +80,13 @@ public class GameWorld extends JPanel implements Runnable {
         } catch (InterruptedException ignored) {
             System.out.println(ignored);
         }
+    }
+
+    private void showResult(int i) {
+        this.battle.stopSound();
+        this.lf.getEndGamePanel().playWinnerSound();
+        this.lf.getEndGamePanel().setWinnerPlayer(i);
+        this.lf.setFrame("end");
     }
 
     /**
@@ -100,7 +109,7 @@ public class GameWorld extends JPanel implements Runnable {
         InputStreamReader isr = new InputStreamReader(
                 Objects.requireNonNull(
                         ResourceManager.class.getClassLoader().
-                                getResourceAsStream("maps/map2.csv")));
+                                getResourceAsStream("maps/map1.csv")));
         try (BufferedReader mapReader = new BufferedReader(isr)) {
             int row = 0;
             String[] gameItems;
@@ -122,6 +131,7 @@ public class GameWorld extends JPanel implements Runnable {
         TankControl tc1 = new TankControl(t1, KeyEvent.VK_W, KeyEvent.VK_S, KeyEvent.VK_A, KeyEvent.VK_D, KeyEvent.VK_SPACE);
         this.lf.getJf().addKeyListener(tc1);
 
+//        t2 = (Tank) GameObject.newInstance("22", 200, 200, this);  //for testing purposes
         t2 = (Tank) GameObject.newInstance("22", GameConstants.GAME_WORLD_WIDTH - 100, GameConstants.GAME_WORLD_HEIGHT - 100, this);
         TankControl tc2 = new TankControl(t2, KeyEvent.VK_UP, KeyEvent.VK_DOWN, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, KeyEvent.VK_NUMPAD0);
         this.lf.getJf().addKeyListener(tc2);
@@ -129,10 +139,10 @@ public class GameWorld extends JPanel implements Runnable {
         bot1 = (BotAI) GameObject.newInstance("33", 100, GameConstants.GAME_WORLD_HEIGHT - 100, this);
         bot2 = (BotAI) GameObject.newInstance("44", GameConstants.GAME_WORLD_WIDTH - 100, 100, this);
 
-        this.gobjs.add(bot1);
-        this.gobjs.add(bot2);
         this.gobjs.add(t1);
         this.gobjs.add(t2);
+        this.gobjs.add(bot1);
+        this.gobjs.add(bot2);
     }
 
     private void checkCollision() {
@@ -172,14 +182,6 @@ public class GameWorld extends JPanel implements Runnable {
         BufferedImage floor = ResourceManager.getSprite("floor");
         buffer.drawImage(floor, 0, 0, null);
     }
-//    private void drawFloor(Graphics2D buffer) {
-//        BufferedImage floor = ResourceManager.getSprite("floor");
-//        for (int i = 0; i < GameConstants.GAME_WORLD_WIDTH; i += 320) {
-//            for (int j = 0; j < GameConstants.GAME_WORLD_HEIGHT; j += 240) {
-//                buffer.drawImage(floor, i, j, null);
-//            }
-//        }
-//    }
 
     private void renderMinimap(Graphics2D g2) {
         BufferedImage mm = this.world.getSubimage(0, 0,
@@ -226,11 +228,7 @@ public class GameWorld extends JPanel implements Runnable {
         buffer.fillRect(0, 0, GameConstants.GAME_SCREEN_WIDTH, GameConstants.GAME_SCREEN_HEIGHT);
         this.drawFloor(buffer);
         this.gobjs.forEach(gameObject -> gameObject.drawImage(buffer));
-//        for (GameObject gameObject : this.gobjs) {
-//            if (gameObject.isActive()) {
-//                gameObject.drawImage(buffer);
-//            }
-//        }
+
         this.t1.drawImage(buffer);
         this.t2.drawImage(buffer);
         this.animations.forEach(animations -> animations.drawImage(buffer));

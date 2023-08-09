@@ -105,6 +105,16 @@ public class Launcher {
     }
 
     public void closeGame() {
-        this.jf.dispatchEvent(new WindowEvent(this.jf, WindowEvent.WINDOW_CLOSING));
+        int response = JOptionPane.showConfirmDialog(
+                this.jf,
+                "Are you sure you want to exit game?",
+                "Exit Game",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE
+        );
+
+        if (response == JOptionPane.YES_OPTION) {
+            this.jf.dispatchEvent(new WindowEvent(this.jf, WindowEvent.WINDOW_CLOSING));
+        }
     }
 }

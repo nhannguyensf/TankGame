@@ -1,6 +1,5 @@
 package tankrotationexample.game;
 
-import tankrotationexample.GameConstants;
 import tankrotationexample.Resources.ResourceManager;
 
 import java.awt.*;
@@ -43,37 +42,13 @@ public class Bullet extends GameObject {
         return this.isActive;
     }
 
-    public float getX() {
-        return this.x;
-    }
-
-    public float getY() {
-        return this.y;
-    }
-
     void update() {
         if (this.isActive) {
             vx = Math.round(R * Math.cos(Math.toRadians(angle)));
             vy = Math.round(R * Math.sin(Math.toRadians(angle)));
             x += vx;
             y += vy;
-//            checkBorder();
             this.hitBox.setLocation((int) x, (int) y);
-        }
-    }
-
-    private void checkBorder() {
-        if (x < 30) {
-            x = 30;
-        }
-        if (x >= GameConstants.GAME_WORLD_WIDTH - 80) {
-            x = GameConstants.GAME_WORLD_WIDTH - 80;
-        }
-        if (y < 40) {
-            y = 40;
-        }
-        if (y >= GameConstants.GAME_WORLD_HEIGHT - 80) {
-            y = GameConstants.GAME_WORLD_HEIGHT - 80;
         }
     }
 
@@ -101,6 +76,7 @@ public class Bullet extends GameObject {
 
     private void handleTankCollision(Tank playerTank) {
         this.gameWorld.addAnimations(new Animation(playerTank.getX(), playerTank.getY() - 5, ResourceManager.getAnimation("rockethit")));
+        ResourceManager.getSound("explosion").playSound();
         this.isActive = false;
         playerTank.health -= this.bulletDamage;
         System.out.println("Tank health: " + playerTank.health);
@@ -117,6 +93,8 @@ public class Bullet extends GameObject {
     }
 
     private void handleWallCollision() {
+        ResourceManager.getSound("explosion").playSound();
+        this.gameWorld.addAnimations(new Animation(x, y, ResourceManager.getAnimation("puffsmoke")));
         this.isActive = false;
     }
 
