@@ -19,7 +19,7 @@ public class Sound {
         this.sound.loop(Clip.LOOP_CONTINUOUSLY);
     }
 
-    public void stop() {
+    public void stopSound() {
         if (this.sound.isRunning()) {
             this.sound.stop();
         }

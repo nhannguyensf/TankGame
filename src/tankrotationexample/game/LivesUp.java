@@ -1,7 +1,5 @@
 package tankrotationexample.game;
 
-import tankrotationexample.Resources.ResourceManager;
-
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
@@ -11,16 +9,13 @@ public class LivesUp extends GameObject implements PowerUp {
     BufferedImage img;
     private Rectangle hitBox;
     private boolean isActive;
-    private GameWorld gameWorld;
 
-
-    public LivesUp(float x, float y, BufferedImage img, GameWorld gameWorld) {
+    public LivesUp(float x, float y, BufferedImage img) {
         this.x = x;
         this.y = y;
         this.img = img;
         this.hitBox = new Rectangle((int) x, (int) y, this.img.getWidth(), this.img.getHeight());
         this.isActive = true;
-        this.gameWorld = gameWorld;
     }
 
     public static int getLivesBoost() {
@@ -34,7 +29,6 @@ public class LivesUp extends GameObject implements PowerUp {
     @Override
     public void applyPowerUp(Tank tank) {
         System.out.println("x= " + this.x + " ,y= " + this.y);
-        this.gameWorld.addAnimations(new Animation(this.x-70, this.y-70, ResourceManager.getAnimation("powerpick")));
         System.out.println("Tank has more life");
         tank.increaseLife();
         this.isActive = false;
