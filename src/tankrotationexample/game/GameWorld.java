@@ -20,10 +20,7 @@ public class GameWorld extends JPanel implements Runnable {
 
     static double scaleFactor = 0.1;
     private final Launcher lf;
-    List<Animation> animations = new ArrayList<>();
-    Sound battle = ResourceManager.getSound("battle");
-//    Sound winnerSound = ResourceManager.getSound("winner");
-
+    private List<Animation> animations = new ArrayList<>();
     private List<GameObject> gobjs = new ArrayList<>(1000);
     private BufferedImage world;
     private Tank t1;
@@ -53,14 +50,12 @@ public class GameWorld extends JPanel implements Runnable {
     public void run() {
         try {
             resetGame();
-            battle.setLooping();
-            battle.playSound();
             while (true) {
                 this.tick++;
-                this.t1.update(); // update tank
-                this.t2.update(); // update tank
-                this.bot1.update(t1); // update AI tank1 to follow t1
-                this.bot2.update(t2); // update AI tank2 to follow t2
+                this.t1.update(this); // update tank
+                this.t2.update(this); // update tank
+                this.bot1.update(t1, this); // update AI tank1 to follow t1
+                this.bot2.update(t2, this); // update AI tank2 to follow t2
                 this.animations.forEach(animation -> animation.update());
                 checkCollision();
                 if (t1.getLive() <= 0) {
@@ -83,8 +78,6 @@ public class GameWorld extends JPanel implements Runnable {
     }
 
     private void showResult(int i) {
-        this.battle.stopSound();
-        this.lf.getEndGamePanel().playWinnerSound();
         this.lf.getEndGamePanel().setWinnerPlayer(i);
         this.lf.setFrame("end");
     }
@@ -118,7 +111,7 @@ public class GameWorld extends JPanel implements Runnable {
                 for (int col = 0; col < gameItems.length; col++) {
                     String gameObject = gameItems[col];
                     if ("0".equals(gameObject)) continue;
-                    this.gobjs.add(GameObject.newInstance(gameObject, col * 30, row * 30, this));
+                    this.gobjs.add(GameObject.newInstance(gameObject, col * 30, row * 30));
                 }
                 row++;
             }
@@ -127,17 +120,17 @@ public class GameWorld extends JPanel implements Runnable {
             System.exit(-2);
         }
 
-        t1 = (Tank) GameObject.newInstance("11", 100, 100, this);
+        t1 = (Tank) GameObject.newInstance("11", 100, 100);
         TankControl tc1 = new TankControl(t1, KeyEvent.VK_W, KeyEvent.VK_S, KeyEvent.VK_A, KeyEvent.VK_D, KeyEvent.VK_SPACE);
         this.lf.getJf().addKeyListener(tc1);
 
-//        t2 = (Tank) GameObject.newInstance("22", 200, 200, this);  //for testing purposes
-        t2 = (Tank) GameObject.newInstance("22", GameConstants.GAME_WORLD_WIDTH - 100, GameConstants.GAME_WORLD_HEIGHT - 100, this);
+//        t2 = (Tank) GameObject.newInstance("22", 200, 200);  //for testing purposes
+        t2 = (Tank) GameObject.newInstance("22", GameConstants.GAME_WORLD_WIDTH - 100, GameConstants.GAME_WORLD_HEIGHT - 100);
         TankControl tc2 = new TankControl(t2, KeyEvent.VK_UP, KeyEvent.VK_DOWN, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, KeyEvent.VK_NUMPAD0);
         this.lf.getJf().addKeyListener(tc2);
 
-        bot1 = (BotAI) GameObject.newInstance("33", 100, GameConstants.GAME_WORLD_HEIGHT - 100, this);
-        bot2 = (BotAI) GameObject.newInstance("44", GameConstants.GAME_WORLD_WIDTH - 100, 100, this);
+        bot1 = (BotAI) GameObject.newInstance("33", 100, GameConstants.GAME_WORLD_HEIGHT - 100);
+        bot2 = (BotAI) GameObject.newInstance("44", GameConstants.GAME_WORLD_WIDTH - 100, 100);
 
         this.gobjs.add(t1);
         this.gobjs.add(t2);
@@ -163,7 +156,7 @@ public class GameWorld extends JPanel implements Runnable {
                         ResourceManager.getSound("pickup").playSound();
                     }
                     System.out.println(obj1 + " HAS HIT " + obj2);
-                    obj1.collides(obj2);
+                    obj1.collides(obj2, this);
                 }
             }
         }

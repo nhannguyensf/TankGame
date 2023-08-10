@@ -26,7 +26,7 @@ public class Wall extends GameObject {
     }
 
     @Override
-    public void collides(GameObject obj2) {
+    public void collides(GameObject obj2, GameWorld gameWorld) {
 
     }
 

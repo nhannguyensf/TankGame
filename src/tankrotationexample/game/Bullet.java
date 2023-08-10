@@ -17,9 +17,8 @@ public class Bullet extends GameObject {
     private float R;
     private BufferedImage img;
     private Rectangle hitBox;
-    private GameWorld gameWorld;
 
-    Bullet(float x, float y, BufferedImage img, float angle, float bulletSpeed, GameWorld gameWorld) {
+    Bullet(float x, float y, BufferedImage img, float angle, float bulletSpeed) {
         this.x = x;
         this.y = y;
         this.vx = 0;
@@ -29,7 +28,6 @@ public class Bullet extends GameObject {
         this.R = bulletSpeed;
         this.isActive = true;
         this.hitBox = new Rectangle((int) x, (int) y, this.img.getWidth(), this.img.getHeight());
-        this.gameWorld = gameWorld;
     }
 
     public Rectangle getHitBox() {
@@ -58,24 +56,24 @@ public class Bullet extends GameObject {
     }
 
     @Override
-    public void collides(GameObject with) {
+    public void collides(GameObject with, GameWorld gameWorld) {
         if (with instanceof Wall || with instanceof BreakableWall) {
             //disappear bullet
-            handleWallCollision();
+            handleWallCollision(gameWorld);
             System.out.println("Bullet hits a wall");
             if (with instanceof BreakableWall) {
-                handleBreakableWallCollision((BreakableWall) with);
+                handleBreakableWallCollision((BreakableWall) with, gameWorld);
                 System.out.println("Bullet hits a BreakableWall");
             }
         } else if (with instanceof Tank) {
             //lose health
-            handleTankCollision((Tank) with);
+            handleTankCollision((Tank) with, gameWorld);
             System.out.println("Tank being hit!!!");
         }
     }
 
-    private void handleTankCollision(Tank playerTank) {
-        this.gameWorld.addAnimations(new Animation(playerTank.getX(), playerTank.getY() - 5, ResourceManager.getAnimation("rockethit")));
+    private void handleTankCollision(Tank playerTank, GameWorld gameWorld) {
+        gameWorld.addAnimations(new Animation(playerTank.getX(), playerTank.getY() - 5, ResourceManager.getAnimation("rockethit")));
         ResourceManager.getSound("explosion").playSound();
         this.isActive = false;
         playerTank.health -= this.bulletDamage;
@@ -85,16 +83,16 @@ public class Bullet extends GameObject {
         }
     }
 
-    private void handleBreakableWallCollision(BreakableWall with) {
-        this.gameWorld.addAnimations(new Animation(with.getX(), with.getY() - 5, ResourceManager.getAnimation("bullethit")));
+    private void handleBreakableWallCollision(BreakableWall with, GameWorld gameWorld) {
+        gameWorld.addAnimations(new Animation(with.getX(), with.getY() - 5, ResourceManager.getAnimation("bullethit")));
         ResourceManager.getSound("explosion").playSound();
         this.isActive = false;
         with.setActive(false);
     }
 
-    private void handleWallCollision() {
+    private void handleWallCollision(GameWorld gameWorld) {
         ResourceManager.getSound("explosion").playSound();
-        this.gameWorld.addAnimations(new Animation(x, y, ResourceManager.getAnimation("puffsmoke")));
+        gameWorld.addAnimations(new Animation(x, y, ResourceManager.getAnimation("puffsmoke")));
         this.isActive = false;
     }
 

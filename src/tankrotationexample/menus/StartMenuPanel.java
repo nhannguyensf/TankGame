@@ -4,7 +4,6 @@ package tankrotationexample.menus;
 import tankrotationexample.GameConstants;
 import tankrotationexample.Launcher;
 import tankrotationexample.Resources.ResourceManager;
-import tankrotationexample.game.Sound;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,12 +13,8 @@ public class StartMenuPanel extends JPanel {
 
     private final Launcher lf;
     private final BufferedImage menuBackground;
-    Sound bg = ResourceManager.getSound("bg");
 
     public StartMenuPanel(Launcher lf) {
-        bg.setLooping();
-        bg.playSound();
-
         this.lf = lf;
         menuBackground = ResourceManager.getSprite("menu");
         this.setBackground(Color.BLACK);
@@ -28,10 +23,7 @@ public class StartMenuPanel extends JPanel {
         JButton start = new JButton("Start");
         start.setFont(new Font("Courier New", Font.BOLD, 24));
         start.setBounds((int) (0.61 * GameConstants.START_MENU_SCREEN_WIDTH), (int) (0.6 * GameConstants.START_MENU_SCREEN_HEIGHT), 150, 50);
-        start.addActionListener(actionEvent -> {
-            bg.stopSound();
-            this.lf.setFrame("game");
-        });
+        start.addActionListener(actionEvent -> this.lf.setFrame("game"));
 
         JButton instructions = new JButton("Controls");
         instructions.setFont(new Font("Courier New", Font.BOLD, 24));
@@ -66,7 +58,10 @@ public class StartMenuPanel extends JPanel {
     public void paintComponent(Graphics g) {
         Graphics2D g2 = (Graphics2D) g;
         g2.drawImage(this.menuBackground, 0, 0, null);
-        // Drawing the credit
+        writeCredit(g2);
+    }
+
+    private void writeCredit(Graphics2D g2) {
         g2.setColor(Color.LIGHT_GRAY);
         g2.setFont(new Font("Arial", Font.PLAIN, 12));
         String creditText = "Developed by Nhan Nguyen";
@@ -74,7 +69,6 @@ public class StartMenuPanel extends JPanel {
         int yPosition = this.getHeight() - 10;
         int stringWidth = g2.getFontMetrics().stringWidth(creditText);
         int xPosition = (this.getWidth() - stringWidth) / 2;
-
         g2.drawString(creditText, xPosition, yPosition);
     }
 }

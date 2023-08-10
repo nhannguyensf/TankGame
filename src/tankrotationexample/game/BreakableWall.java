@@ -9,6 +9,7 @@ public class BreakableWall extends GameObject {
     BufferedImage img;
     private boolean isActive;
     private Rectangle hitBox;
+
     public BreakableWall(float x, float y, BufferedImage img) {
         this.x = x;
         this.y = y;
@@ -39,7 +40,7 @@ public class BreakableWall extends GameObject {
     }
 
     @Override
-    public void collides(GameObject obj2) {
+    public void collides(GameObject obj2, GameWorld gameWorld) {
 
     }
 

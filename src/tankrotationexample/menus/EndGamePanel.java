@@ -14,7 +14,6 @@ public class EndGamePanel extends JPanel {
     private final Launcher lf;
     private final BufferedImage tank1win = ResourceManager.getSprite("tank1win");
     private final BufferedImage tank2win = ResourceManager.getSprite("tank2win");
-    Sound winnerSound = ResourceManager.getSound("winner");
     private int winnerPlayer = 1;
 
 
@@ -27,7 +26,6 @@ public class EndGamePanel extends JPanel {
         start.setFont(new Font("Courier New", Font.BOLD, 24));
         start.setBounds((int) (0.5 * GameConstants.START_MENU_SCREEN_WIDTH), (int) (0.6 * GameConstants.START_MENU_SCREEN_HEIGHT), 250, 50);
         start.addActionListener((actionEvent -> {
-            this.winnerSound.stopSound();
             this.lf.setFrame("game");
         }));
 
@@ -35,7 +33,6 @@ public class EndGamePanel extends JPanel {
         mainMenu.setFont(new Font("Courier New", Font.BOLD, 24));
         mainMenu.setBounds((int) (0.5 * GameConstants.START_MENU_SCREEN_WIDTH), (int) (0.6 * GameConstants.START_MENU_SCREEN_HEIGHT + 75), 250, 50);
         mainMenu.addActionListener((actionEvent -> {
-            this.winnerSound.stopSound();
             this.lf.setFrame("start");
         }));
 
@@ -61,9 +58,5 @@ public class EndGamePanel extends JPanel {
 
     public void setWinnerPlayer(int winnerPlayer) {
         this.winnerPlayer = winnerPlayer;
-    }
-
-    public void playWinnerSound() {
-        this.winnerSound.playSound();
     }
 }

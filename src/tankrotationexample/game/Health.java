@@ -27,7 +27,7 @@ public class Health extends GameObject implements PowerUp {
     }
 
     @Override
-    public void collides(GameObject obj2) {
+    public void collides(GameObject obj2, GameWorld gameWorld) {
 
     }
 
