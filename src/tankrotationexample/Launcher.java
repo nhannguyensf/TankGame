@@ -2,6 +2,7 @@ package tankrotationexample;
 
 import tankrotationexample.Resources.ResourceManager;
 import tankrotationexample.game.GameWorld;
+import tankrotationexample.game.Sound;
 import tankrotationexample.menus.EndGamePanel;
 import tankrotationexample.menus.StartMenuPanel;
 
@@ -16,6 +17,10 @@ public class Launcher {
      * listeners to this JFrame.
      */
     private final JFrame jf;
+    Sound bg = ResourceManager.getSound("bg");
+    Sound winnerSound = ResourceManager.getSound("winner");
+    Sound battle = ResourceManager.getSound("battle");
+
     /*
      * Main panel in JFrame, the layout of this panel
      * will be card layout, this will allow us to switch
@@ -32,7 +37,6 @@ public class Launcher {
      */
     private GameWorld gamePanel;
     private EndGamePanel endGamePanel;
-
     /*
      * CardLayout is used to manage our sub-panels. This is a layout manager
      * used for our game. It will be attached to the main panel.
@@ -78,19 +82,30 @@ public class Launcher {
     public void setFrame(String type) {
         this.jf.setVisible(false); // hide the JFrame
         switch (type) {
-            case "start" ->
+            case "start" -> {
+                winnerSound.stopSound();
+                bg.setLooping();
+                bg.playSound();
                 // set the size of the jFrame to the expected size for the start panel
-                    this.jf.setSize(GameConstants.START_MENU_SCREEN_WIDTH, GameConstants.START_MENU_SCREEN_HEIGHT);
+                this.jf.setSize(GameConstants.START_MENU_SCREEN_WIDTH, GameConstants.START_MENU_SCREEN_HEIGHT);
+            }
             case "game" -> {
+                bg.stopSound();
+                winnerSound.stopSound();
+                battle.setLooping();
+                battle.playSound();
                 // set the size of the jFrame to the expected size for the game panel
                 this.jf.setSize(GameConstants.GAME_SCREEN_WIDTH, GameConstants.GAME_SCREEN_HEIGHT);
                 //start a new thread for the game to run. This will ensure our JFrame is responsive and
                 // not stuck executing the game loop.
                 (new Thread(this.gamePanel)).start();
             }
-            case "end" ->
+            case "end" -> {
+                battle.stopSound();
+                winnerSound.playSound();
                 // set the size of the jFrame to the expected size for the end panel
-                    this.jf.setSize(GameConstants.END_MENU_SCREEN_WIDTH, GameConstants.END_MENU_SCREEN_HEIGHT);
+                this.jf.setSize(GameConstants.END_MENU_SCREEN_WIDTH, GameConstants.END_MENU_SCREEN_HEIGHT);
+            }
         }
         this.cl.show(mainPanel, type); // change current panel shown on main panel tp the panel denoted by type.
         this.jf.setVisible(true); // show the JFrame

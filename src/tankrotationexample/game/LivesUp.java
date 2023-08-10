@@ -40,8 +40,7 @@ public class LivesUp extends GameObject implements PowerUp {
     }
 
     @Override
-    public void collides(GameObject obj2) {
-
+    public void collides(GameObject obj2, GameWorld gameWorld) {
     }
 
     public void drawImage(Graphics buffer) {

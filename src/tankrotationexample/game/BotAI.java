@@ -19,12 +19,11 @@ public class BotAI extends Tank {
     private float vx;
     private float vy;
     private float angle;
-    private GameWorld gameWorld;
     private float deltaX;
     private float deltaY;
     private float distanceToPlayer;
 
-    BotAI(float x, float y, float vx, float vy, float angle, BufferedImage img, GameWorld gameWorld) {
+    BotAI(float x, float y, float vx, float vy, float angle, BufferedImage img) {
         this.x = x;
         this.y = y;
         this.vx = vx;
@@ -32,7 +31,6 @@ public class BotAI extends Tank {
         this.img = img;
         this.angle = angle;
         this.hitBox = new Rectangle((int) x, (int) y, this.img.getWidth(), this.img.getHeight());
-        this.gameWorld = gameWorld;
     }
 
     public Rectangle getHitBox() {
@@ -48,7 +46,7 @@ public class BotAI extends Tank {
     }
 
     @Override
-    public void collides(GameObject with) {
+    public void collides(GameObject with, GameWorld gameWorld) {
     }
 
     private void rotateLeft() {
@@ -82,19 +80,19 @@ public class BotAI extends Tank {
         }
     }
 
-    void update(Tank playerTank) {
+    void update(Tank playerTank, GameWorld gameWorld) {
         this.deltaX = playerTank.getX() - x;
         this.deltaY = playerTank.getY() - y;
         this.distanceToPlayer = (float) Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-        attackPlayer();
+        attackPlayer(gameWorld);
         this.hitBox.setLocation((int) x, (int) y);
     }
 
-    public void attackPlayer() {
+    public void attackPlayer(GameWorld gameWorld) {
         if (this.distanceToPlayer > 50) {
             pursuitPlayer();
         }
-        shootPlayer();
+        shootPlayer(gameWorld);
     }
 
     private void pursuitPlayer() {
@@ -108,7 +106,7 @@ public class BotAI extends Tank {
         }
     }
 
-    private void shootPlayer() {
+    private void shootPlayer(GameWorld gameWorld) {
         if ((distanceToPlayer < 300) && ((this.timeSinceLastShot + this.reloadAmmo) < System.currentTimeMillis())) {
             this.timeSinceLastShot = System.currentTimeMillis();
 
@@ -117,11 +115,11 @@ public class BotAI extends Tank {
             // Calculate the offset for the x and y coordinates based on the angle
             float bulletX = x + ((float) img.getWidth() / 2 - BULLET_OFFSET / 2) + (float) (Math.cos(Math.toRadians(angle)) * ((img.getWidth() / 2) + BULLET_OFFSET));
             float bulletY = y + ((float) img.getHeight() / 2 - BULLET_OFFSET / 2) + (float) (Math.sin(Math.toRadians(angle)) * ((img.getWidth() / 2) + BULLET_OFFSET));
-            Bullet bullet = new Bullet(bulletX, bulletY, ResourceManager.getSprite("bullet"), angle, 6, gameWorld);
+            Bullet bullet = new Bullet(bulletX, bulletY, ResourceManager.getSprite("bullet"), angle, 6);
             this.ammo.add(bullet);
-            this.gameWorld.addGameObject(bullet);
-            this.gameWorld.addAnimations(new Animation(x, y, ResourceManager.getAnimation("bulletshoot")));
-            this.gameWorld.addAnimations(new Animation(x, y, ResourceManager.getAnimation("puffsmoke")));
+            gameWorld.addGameObject(bullet);
+            gameWorld.addAnimations(new Animation(x, y, ResourceManager.getAnimation("bulletshoot")));
+            gameWorld.addAnimations(new Animation(x, y, ResourceManager.getAnimation("puffsmoke")));
             ResourceManager.getSound("shotfire").playSound();
         }
     }

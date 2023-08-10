@@ -36,9 +36,8 @@ public class Tank extends GameObject {
     private boolean RightPressed;
     private boolean LeftPressed;
     private boolean shootPressed;
-    private GameWorld gameWorld;
 
-    public Tank(float x, float y, float vx, float vy, float angle, BufferedImage img, GameWorld gameWorld) {
+    public Tank(float x, float y, float vx, float vy, float angle, BufferedImage img) {
         this.x = x;
         this.y = y;
         this.vx = vx;
@@ -47,7 +46,6 @@ public class Tank extends GameObject {
         this.angle = angle;
         hitBox = null;
         this.hitBox = new Rectangle((int) x, (int) y, this.img.getWidth(), this.img.getHeight());
-        this.gameWorld = gameWorld;
     }
 
 
@@ -76,13 +74,13 @@ public class Tank extends GameObject {
     }
 
     @Override
-    public void collides(GameObject with) {
+    public void collides(GameObject with, GameWorld gameWorld) {
         if (with instanceof Wall || with instanceof BreakableWall) {
             //stop
             handleAllWallCollision(with);
             System.out.println("Tank is hitting a type of wall");
         } else if (with instanceof PowerUp) {
-            this.gameWorld.addAnimations(new Animation(this.x, this.y - 50, ResourceManager.getAnimation("powerpick")));
+            gameWorld.addAnimations(new Animation(this.x, this.y - 50, ResourceManager.getAnimation("powerpick")));
             ((PowerUp) with).applyPowerUp(this);
         }
     }
@@ -188,7 +186,7 @@ public class Tank extends GameObject {
         this.shootPressed = false;
     }
 
-    void update() {
+    void update(GameWorld gameWorld) {
         if (this.UpPressed) {
             this.moveForwards();
         }
@@ -213,11 +211,11 @@ public class Tank extends GameObject {
             float bulletX = this.x + ((float) this.img.getWidth() / 2) + (float) (Math.cos(Math.toRadians(this.angle)) * BULLET_OFFSET);
             float bulletY = this.y + ((float) this.img.getHeight() / 2) + (float) (Math.sin(Math.toRadians(this.angle)) * BULLET_OFFSET);
 
-            var bullet = new Bullet(bulletX, bulletY, ResourceManager.getSprite("bullet"), angle, 6, this.gameWorld);
+            var bullet = new Bullet(bulletX, bulletY, ResourceManager.getSprite("bullet"), angle, 6);
             this.ammo.add(bullet);
-            this.gameWorld.addGameObject(bullet);
-            this.gameWorld.addAnimations(new Animation(x, y, ResourceManager.getAnimation("bulletshoot")));
-            this.gameWorld.addAnimations(new Animation(x, y, ResourceManager.getAnimation("puffsmoke")));
+            gameWorld.addGameObject(bullet);
+            gameWorld.addAnimations(new Animation(x, y, ResourceManager.getAnimation("bulletshoot")));
+            gameWorld.addAnimations(new Animation(x, y, ResourceManager.getAnimation("puffsmoke")));
             ResourceManager.getSound("bullet_shoot").playSound();
         }
 
